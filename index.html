@@ -3,10 +3,41 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Gold Button → Camera + Silver</title>
+  <title>Gold Button → Camera BG + Silver</title>
   <style>
     html, body { height:100%; margin:0; overflow:hidden; background:#ffffff; }
     #app { position:fixed; inset:0; background:#ffffff; }
+
+    /* Видео фоном */
+    #bgVideo{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      z-index:1;
+      opacity:0;
+      transition: opacity 420ms ease;
+      transform: scale(1.03); /* чуть “киношнее” */
+      filter: saturate(1.15) contrast(1.06) brightness(1.02);
+    }
+    /* мягкий “премиум” слой поверх видео */
+    #videoGrade{
+      position:fixed;
+      inset:0;
+      z-index:2;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity 420ms ease;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      background:
+        radial-gradient(60% 40% at 50% 35%, rgba(255,255,255,0.12), rgba(255,255,255,0) 60%),
+        linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.22));
+    }
+
+    /* Canvas 3D поверх всего */
+    canvas{ position:fixed; inset:0; z-index:3; }
 
     /* стартовый UI */
     .overlay{
@@ -14,7 +45,10 @@
       display:flex; align-items:center; justify-content:center;
       background:#ffffff;
       z-index:10;
+      transition: opacity 420ms ease;
     }
+    .overlay.hide{ opacity:0; pointer-events:none; }
+
     .cta{
       position:relative;
       width:min(360px, 78vw);
@@ -31,7 +65,6 @@
       background: linear-gradient(180deg,#ffe7a6 0%, #ffd36a 22%, #d6a019 70%, #b57e0c 100%);
       overflow:hidden;
     }
-    /* “отражение” на кнопке */
     .cta::before{
       content:"";
       position:absolute;
@@ -39,14 +72,13 @@
       transform: rotate(18deg) translateX(-30%);
       background: linear-gradient(90deg,
         rgba(255,255,255,0) 0%,
-        rgba(255,255,255,.35) 35%,
-        rgba(255,255,255,.10) 50%,
+        rgba(255,255,255,.40) 35%,
+        rgba(255,255,255,.12) 50%,
         rgba(255,255,255,0) 70%
       );
       animation: shine 2.3s ease-in-out infinite;
       pointer-events:none;
     }
-    /* лёгкая “стеклянность” */
     .cta::after{
       content:"";
       position:absolute;
@@ -71,7 +103,9 @@
       pointer-events:none;
       font: 13px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
       color: rgba(0,0,0,.55);
+      transition: opacity 420ms ease;
     }
+    .hint.hide{ opacity:0; }
     .hint span{
       background: rgba(255,255,255,.75);
       border: 1px solid rgba(0,0,0,.08);
@@ -81,7 +115,7 @@
       -webkit-backdrop-filter: blur(10px);
     }
 
-    /* скрытая камера */
+    /* поток камеры (скрыт) */
     #cam { display:none; }
   </style>
 
@@ -98,12 +132,17 @@
 <body>
   <div id="app"></div>
 
+  <!-- Видео фон (видимое) -->
+  <video id="bgVideo" playsinline muted autoplay></video>
+  <div id="videoGrade"></div>
+
   <!-- Стартовый экран -->
   <div class="overlay" id="overlay">
     <button class="cta" id="startBtn">Включить камеру</button>
   </div>
   <div class="hint" id="hint"><span>После нажатия запросит доступ к камере</span></div>
 
+  <!-- скрытый “служебный” (оставим один и тот же поток) -->
   <video id="cam" playsinline muted autoplay></video>
 
   <script type="module">
@@ -118,7 +157,10 @@
     const overlay = document.getElementById("overlay");
     const hint = document.getElementById("hint");
     const startBtn = document.getElementById("startBtn");
-    const video = document.getElementById("cam");
+
+    const cam = document.getElementById("cam");
+    const bgVideo = document.getElementById("bgVideo");
+    const videoGrade = document.getElementById("videoGrade");
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:"high-performance" });
@@ -126,7 +168,7 @@
     renderer.setSize(innerWidth, innerHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
+    renderer.toneMappingExposure = 1.02;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
@@ -136,14 +178,12 @@
     scene.background = new THREE.Color(0xffffff);
 
     const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.05, 100);
-
     const HOME = {
       camPos: new THREE.Vector3(0.0, 0.75, 2.35),
       target: new THREE.Vector3(0, 0.33, 0)
     };
     camera.position.copy(HOME.camPos);
 
-    // Controls (не даём потеряться)
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
@@ -170,27 +210,27 @@
     key.shadow.bias = -0.00025;
     scene.add(key);
 
-    const fill = new THREE.DirectionalLight(0xffffff, 1.1);
+    const fill = new THREE.DirectionalLight(0xffffff, 1.15);
     fill.position.set(-2.8, 2.1, 1.2);
     scene.add(fill);
 
-    const rim = new THREE.DirectionalLight(0xffffff, 1.4);
+    const rim = new THREE.DirectionalLight(0xffffff, 1.35);
     rim.position.set(-1.2, 3.4, -2.8);
     scene.add(rim);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.22));
 
     // Ground shadow catcher
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(30,30),
-      new THREE.ShadowMaterial({ opacity: 0.20 })
+      new THREE.ShadowMaterial({ opacity: 0.18 })
     );
     ground.receiveShadow = true;
     ground.rotation.x = -Math.PI/2;
     ground.position.y = 0;
     scene.add(ground);
 
-    // 3D bar geometry (same for gold/silver)
+    // Bar geometry
     const W = 1.08, D = 0.58, H = 0.30, R = 0.075;
     const shape = new THREE.Shape();
     shape.moveTo(-W/2 + R, -D/2);
@@ -215,16 +255,16 @@
     geom.center();
     geom.rotateX(Math.PI / 2);
 
-    // Silver material (будет включен после камеры)
+    // Silver material (final)
     const silverMat = new THREE.MeshPhysicalMaterial({
       color: new THREE.Color(0.95, 0.96, 1.0),
       metalness: 1.0,
-      roughness: 0.09,
+      roughness: 0.085,
       clearcoat: 0.55,
       clearcoatRoughness: 0.12,
       reflectivity: 1.0,
       ior: 1.5,
-      envMapIntensity: 1.8
+      envMapIntensity: 1.9
     });
 
     const bar = new THREE.Mesh(geom, silverMat);
@@ -233,7 +273,7 @@
     bar.rotation.set(0.09, 0.50, 0.02);
     scene.add(bar);
 
-    // ===== Camera env (stable) =====
+    // Stable camera reflection (CubeCamera)
     let camSphere = null;
     let cubeRT = null;
     let cubeCam = null;
@@ -241,7 +281,6 @@
     let lastCubeUpdate = 0;
 
     function setupCameraEnv(videoTexture) {
-      // “мир” из камеры — внутренняя сфера
       const sphereGeo = new THREE.SphereGeometry(10, 48, 32);
       sphereGeo.scale(-1, 1, 1);
       const sphereMat = new THREE.MeshBasicMaterial({ map: videoTexture });
@@ -256,11 +295,10 @@
       });
       cubeCam = new THREE.CubeCamera(0.1, 50, cubeRT);
 
-      scene.environment = cubeRT.texture;   // отражения
-      scene.background = new THREE.Color(0xffffff); // фон остаётся белым как ты хотел
+      scene.environment = cubeRT.texture;
     }
 
-    // Postprocessing (лёгкий bloom)
+    // Post
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
     const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.22, 0.55, 0.25);
@@ -276,23 +314,30 @@
           audio: false
         });
 
-        video.srcObject = stream;
-        await video.play();
+        // один поток — в два video (фон + текстура)
+        cam.srcObject = stream;
+        bgVideo.srcObject = stream;
 
-        const vidTex = new THREE.VideoTexture(video);
+        await Promise.all([cam.play(), bgVideo.play()]);
+
+        // теперь фон реально видно
+        bgVideo.style.opacity = "1";
+        videoGrade.style.opacity = "1";
+
+        const vidTex = new THREE.VideoTexture(cam);
         vidTex.colorSpace = THREE.SRGBColorSpace;
         vidTex.minFilter = THREE.LinearFilter;
         vidTex.magFilter = THREE.LinearFilter;
         vidTex.generateMipmaps = false;
 
         setupCameraEnv(vidTex);
-
         camOn = true;
 
-        // UI: скрываем кнопку после включения
-        overlay.style.display = "none";
-        hint.style.display = "none";
+        // Убираем белый экран/подсказку
+        overlay.classList.add("hide");
+        hint.classList.add("hide");
 
+        // через 500мс можно вообще убрать из DOM, но и так норм
       } catch (e) {
         console.error(e);
         hint.querySelector("span").textContent =
@@ -309,22 +354,20 @@
 
     // Animate
     const clock = new THREE.Clock();
-
     function animate() {
       requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
 
-      // плавное движение слитка
       bar.rotation.y = 0.50 + Math.sin(t * 0.55) * 0.085;
       bar.rotation.x = 0.09 + Math.sin(t * 0.9) * 0.02;
 
-      // анти-потеря: мягко возвращает камеру домой
+      // keep centered (no-lost)
       const snap = 0.06;
       controls.target.lerp(HOME.target, snap);
       camera.position.lerp(HOME.camPos, snap);
       camera.lookAt(controls.target);
 
-      // обновляем отражение с камеры ~6 раз/сек
+      // update env 6 fps
       if (camOn && camSphere && cubeCam) {
         const now = performance.now();
         if (now - lastCubeUpdate > 160) {
