@@ -3,42 +3,86 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Gold Bar AR Reflection (MAX + No Lost)</title>
+  <title>Gold Button → Camera + Silver</title>
   <style>
-    html, body { height:100%; margin:0; background:#06060a; overflow:hidden; }
-    #app { position:fixed; inset:0; }
+    html, body { height:100%; margin:0; overflow:hidden; background:#ffffff; }
+    #app { position:fixed; inset:0; background:#ffffff; }
 
-    .hud{
-      position:fixed; left:14px; right:14px; top:14px;
-      display:flex; gap:10px; align-items:center; justify-content:space-between;
-      font: 14px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
-      color: rgba(255,255,255,.88);
+    /* стартовый UI */
+    .overlay{
+      position:fixed; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      background:#ffffff;
+      z-index:10;
+    }
+    .cta{
+      position:relative;
+      width:min(360px, 78vw);
+      height:64px;
+      border:none;
+      border-radius:999px;
+      cursor:pointer;
+      color:#1a1200;
+      font: 800 16px/1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      letter-spacing: .2px;
+      box-shadow:
+        0 18px 40px rgba(214,160,25,.25),
+        0 2px 0 rgba(255,255,255,.45) inset;
+      background: linear-gradient(180deg,#ffe7a6 0%, #ffd36a 22%, #d6a019 70%, #b57e0c 100%);
+      overflow:hidden;
+    }
+    /* “отражение” на кнопке */
+    .cta::before{
+      content:"";
+      position:absolute;
+      inset:-40% -20%;
+      transform: rotate(18deg) translateX(-30%);
+      background: linear-gradient(90deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,.35) 35%,
+        rgba(255,255,255,.10) 50%,
+        rgba(255,255,255,0) 70%
+      );
+      animation: shine 2.3s ease-in-out infinite;
       pointer-events:none;
-      text-shadow: 0 2px 14px rgba(0,0,0,.75);
     }
-    .pill{
-      pointer-events:auto;
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.14);
-      padding: 10px 12px; border-radius: 14px;
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      max-width:min(62ch, 70vw);
+    /* лёгкая “стеклянность” */
+    .cta::after{
+      content:"";
+      position:absolute;
+      left:10px; right:10px; top:10px;
+      height:18px;
+      border-radius:999px;
+      background: rgba(255,255,255,.22);
+      filter: blur(1px);
+      pointer-events:none;
     }
-    .btns{ display:flex; gap:10px; align-items:center; pointer-events:auto; }
-    button{
-      cursor:pointer; border:none; color:#111;
-      background: linear-gradient(180deg,#ffe08a,#d6a019);
-      padding:10px 12px; border-radius:12px; font-weight:800;
-      box-shadow: 0 14px 35px rgba(214,160,25,.22);
+    @keyframes shine {
+      0%   { transform: rotate(18deg) translateX(-60%); opacity:.65; }
+      55%  { transform: rotate(18deg) translateX(60%);  opacity:.95; }
+      100% { transform: rotate(18deg) translateX(110%); opacity:.0; }
     }
-    button.secondary{
-      background: rgba(255,255,255,.10);
-      color: rgba(255,255,255,.90);
-      border: 1px solid rgba(255,255,255,.18);
-      box-shadow:none;
+
+    .hint{
+      position:fixed;
+      left:0; right:0; bottom:18px;
+      display:flex; justify-content:center;
+      z-index:10;
+      pointer-events:none;
+      font: 13px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color: rgba(0,0,0,.55);
     }
-    button:active{ transform: translateY(1px); }
-    button:disabled{ opacity:.55; cursor:not-allowed; }
+    .hint span{
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(0,0,0,.08);
+      padding:10px 12px;
+      border-radius: 999px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    /* скрытая камера */
+    #cam { display:none; }
   </style>
 
   <script type="importmap">
@@ -50,93 +94,73 @@
     }
   </script>
 </head>
+
 <body>
   <div id="app"></div>
 
-  <div class="hud">
-    <div class="pill" id="note">
-      Нажми “Камера” — отражения на золоте будут из реального мира. Слиток не потеряется (есть авто-центр + Сброс).
-    </div>
-    <div class="pill btns">
-      <button id="startBtn">Камера</button>
-      <button id="resetBtn" class="secondary">Сброс</button>
-    </div>
+  <!-- Стартовый экран -->
+  <div class="overlay" id="overlay">
+    <button class="cta" id="startBtn">Включить камеру</button>
   </div>
+  <div class="hint" id="hint"><span>После нажатия запросит доступ к камере</span></div>
 
-  <video id="cam" playsinline muted autoplay style="display:none"></video>
+  <video id="cam" playsinline muted autoplay></video>
 
   <script type="module">
     import * as THREE from "three";
     import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-    import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
     import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
     import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
     import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
     import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
     const container = document.getElementById("app");
+    const overlay = document.getElementById("overlay");
+    const hint = document.getElementById("hint");
     const startBtn = document.getElementById("startBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const note = document.getElementById("note");
     const video = document.getElementById("cam");
 
-    // ===== Renderer =====
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      powerPreference: "high-performance",
-      alpha: false
-    });
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:"high-performance" });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 1.0;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // ===== Scene / Camera =====
+    // Scene + Camera
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x06060a);
+    scene.background = new THREE.Color(0xffffff);
 
-    const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.05, 100);
+    const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.05, 100);
 
-    // “Дом” (чтобы никогда не потерять)
     const HOME = {
       camPos: new THREE.Vector3(0.0, 0.75, 2.35),
       target: new THREE.Vector3(0, 0.33, 0)
     };
     camera.position.copy(HOME.camPos);
 
+    // Controls (не даём потеряться)
     const controls = new OrbitControls(camera, renderer.domElement);
-
-    // ===== Anti-lost controls =====
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
-
-    controls.enablePan = false; // главный виновник “потерялся” — выключаем
+    controls.enablePan = false;
     controls.enableZoom = true;
     controls.minDistance = 1.25;
     controls.maxDistance = 3.2;
-
-    // чтобы не переворачивалось и не улетало вниз/вверх
     controls.minPolarAngle = 0.15;
     controls.maxPolarAngle = Math.PI * 0.49;
-
     controls.target.copy(HOME.target);
     controls.update();
 
-    resetBtn.addEventListener("click", () => {
-      controls.target.copy(HOME.target);
-      camera.position.copy(HOME.camPos);
-      controls.update();
-    });
-
-    // ===== Lights =====
-    const key = new THREE.DirectionalLight(0xffffff, 3.2);
+    // Lights
+    const key = new THREE.DirectionalLight(0xffffff, 3.0);
     key.position.set(2.6, 3.8, 2.2);
     key.castShadow = true;
-    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.mapSize.set(2048,2048);
     key.shadow.camera.near = 0.5;
     key.shadow.camera.far = 12;
     key.shadow.camera.left = -3;
@@ -146,29 +170,28 @@
     key.shadow.bias = -0.00025;
     scene.add(key);
 
-    const fill = new THREE.DirectionalLight(0xffffff, 1.15);
+    const fill = new THREE.DirectionalLight(0xffffff, 1.1);
     fill.position.set(-2.8, 2.1, 1.2);
     scene.add(fill);
 
-    const rim = new THREE.DirectionalLight(0xffffff, 1.65);
+    const rim = new THREE.DirectionalLight(0xffffff, 1.4);
     rim.position.set(-1.2, 3.4, -2.8);
     scene.add(rim);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.18));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.25));
 
     // Ground shadow catcher
     const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(30, 30),
-      new THREE.ShadowMaterial({ opacity: 0.28 })
+      new THREE.PlaneGeometry(30,30),
+      new THREE.ShadowMaterial({ opacity: 0.20 })
     );
     ground.receiveShadow = true;
-    ground.rotation.x = -Math.PI / 2;
+    ground.rotation.x = -Math.PI/2;
     ground.position.y = 0;
     scene.add(ground);
 
-    // ===== Gold bar geometry =====
+    // 3D bar geometry (same for gold/silver)
     const W = 1.08, D = 0.58, H = 0.30, R = 0.075;
-
     const shape = new THREE.Shape();
     shape.moveTo(-W/2 + R, -D/2);
     shape.lineTo(W/2 - R, -D/2);
@@ -192,59 +215,35 @@
     geom.center();
     geom.rotateX(Math.PI / 2);
 
-    const goldMat = new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color(1.0, 0.79, 0.22),
+    // Silver material (будет включен после камеры)
+    const silverMat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(0.95, 0.96, 1.0),
       metalness: 1.0,
-      roughness: 0.075,
+      roughness: 0.09,
       clearcoat: 0.55,
       clearcoatRoughness: 0.12,
       reflectivity: 1.0,
       ior: 1.5,
-      envMapIntensity: 1.6
+      envMapIntensity: 1.8
     });
 
-    const gold = new THREE.Mesh(geom, goldMat);
-    gold.castShadow = true;
-    gold.position.set(0, 0.36, 0);
-    gold.rotation.set(0.09, 0.50, 0.02);
-    scene.add(gold);
+    const bar = new THREE.Mesh(geom, silverMat);
+    bar.castShadow = true;
+    bar.position.set(0, 0.36, 0);
+    bar.rotation.set(0.09, 0.50, 0.02);
+    scene.add(bar);
 
-    // detail plate
-    const stamp = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.64, 0.20),
-      new THREE.MeshStandardMaterial({
-        color: 0x1f1700,
-        metalness: 0.25,
-        roughness: 0.7
-      })
-    );
-    stamp.position.set(0, 0.525, 0.03);
-    stamp.rotation.set(-Math.PI/2, 0, 0.50);
-    scene.add(stamp);
-
-    // ===== HDR fallback env =====
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    pmrem.compileEquirectangularShader();
-
-    new RGBELoader()
-      .setPath("https://raw.githubusercontent.com/pmndrs/drei-assets/master/hdri/")
-      .load("potsdamer_platz_1k.hdr", (hdr) => {
-        const hdrEnv = pmrem.fromEquirectangular(hdr).texture;
-        // пока камера не включена — используем HDR
-        if (!camOn) scene.environment = hdrEnv;
-        hdr.dispose();
-      });
-
-    // ===== Camera reflection (stable) =====
+    // ===== Camera env (stable) =====
     let camSphere = null;
     let cubeRT = null;
     let cubeCam = null;
-    let camVideoTex = null;
     let camOn = false;
+    let lastCubeUpdate = 0;
 
     function setupCameraEnv(videoTexture) {
+      // “мир” из камеры — внутренняя сфера
       const sphereGeo = new THREE.SphereGeometry(10, 48, 32);
-      sphereGeo.scale(-1, 1, 1); // внутрь
+      sphereGeo.scale(-1, 1, 1);
       const sphereMat = new THREE.MeshBasicMaterial({ map: videoTexture });
       camSphere = new THREE.Mesh(sphereGeo, sphereMat);
       camSphere.visible = false;
@@ -257,74 +256,75 @@
       });
       cubeCam = new THREE.CubeCamera(0.1, 50, cubeRT);
 
-      scene.environment = cubeRT.texture;
-      goldMat.envMapIntensity = 1.75;
+      scene.environment = cubeRT.texture;   // отражения
+      scene.background = new THREE.Color(0xffffff); // фон остаётся белым как ты хотел
     }
+
+    // Postprocessing (лёгкий bloom)
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.22, 0.55, 0.25);
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
 
     async function startCamera() {
       try {
-        note.textContent = "Запрашиваю камеру…";
+        hint.querySelector("span").textContent = "Запрашиваю камеру…";
 
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+          video: { facingMode: "environment", width:{ ideal:1280 }, height:{ ideal:720 } },
           audio: false
         });
 
         video.srcObject = stream;
         await video.play();
 
-        camVideoTex = new THREE.VideoTexture(video);
-        camVideoTex.colorSpace = THREE.SRGBColorSpace;
-        camVideoTex.minFilter = THREE.LinearFilter;
-        camVideoTex.magFilter = THREE.LinearFilter;
-        camVideoTex.generateMipmaps = false;
+        const vidTex = new THREE.VideoTexture(video);
+        vidTex.colorSpace = THREE.SRGBColorSpace;
+        vidTex.minFilter = THREE.LinearFilter;
+        vidTex.magFilter = THREE.LinearFilter;
+        vidTex.generateMipmaps = false;
 
-        setupCameraEnv(camVideoTex);
+        setupCameraEnv(vidTex);
 
         camOn = true;
-        note.textContent = "Камера включена ✅ Отражения идут с камеры. Слиток всегда в центре (не потеряется).";
-        startBtn.textContent = "OK";
-        startBtn.disabled = true;
+
+        // UI: скрываем кнопку после включения
+        overlay.style.display = "none";
+        hint.style.display = "none";
 
       } catch (e) {
         console.error(e);
-        note.textContent = "Не удалось включить камеру. Открой по HTTPS/localhost и разреши доступ.";
+        hint.querySelector("span").textContent =
+          "Не получилось включить камеру. Открой по HTTPS/localhost и разреши доступ.";
       }
     }
 
     startBtn.addEventListener("click", startCamera);
 
     if (!navigator.mediaDevices?.getUserMedia) {
-      note.textContent = "Этот браузер не поддерживает доступ к камере (getUserMedia).";
+      hint.querySelector("span").textContent = "Этот браузер не поддерживает камеру (getUserMedia).";
       startBtn.disabled = true;
     }
 
-    // ===== Postprocessing =====
-    const composer = new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.35, 0.55, 0.22);
-    composer.addPass(bloom);
-    composer.addPass(new OutputPass());
-
-    // ===== Animation =====
+    // Animate
     const clock = new THREE.Clock();
-    let lastCubeUpdate = 0;
 
     function animate() {
       requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
 
-      // “дорогая” микро-анимация
-      gold.rotation.y = 0.50 + Math.sin(t * 0.55) * 0.085;
-      gold.rotation.x = 0.09 + Math.sin(t * 0.9) * 0.02;
+      // плавное движение слитка
+      bar.rotation.y = 0.50 + Math.sin(t * 0.55) * 0.085;
+      bar.rotation.x = 0.09 + Math.sin(t * 0.9) * 0.02;
 
-      // авто-центр: если увели — мягко возвращает домой
+      // анти-потеря: мягко возвращает камеру домой
       const snap = 0.06;
       controls.target.lerp(HOME.target, snap);
       camera.position.lerp(HOME.camPos, snap);
       camera.lookAt(controls.target);
 
-      // update cube env 5-6 fps
+      // обновляем отражение с камеры ~6 раз/сек
       if (camOn && camSphere && cubeCam) {
         const now = performance.now();
         if (now - lastCubeUpdate > 160) {
@@ -340,7 +340,6 @@
     }
     animate();
 
-    // ===== Resize =====
     addEventListener("resize", () => {
       camera.aspect = innerWidth / innerHeight;
       camera.updateProjectionMatrix();
@@ -348,12 +347,6 @@
       composer.setSize(innerWidth, innerHeight);
       bloom.setSize(innerWidth, innerHeight);
     });
-
-    // ===== WebGL context loss hint =====
-    renderer.domElement.addEventListener("webglcontextlost", (e) => {
-      e.preventDefault();
-      note.textContent = "WebGL упал (устройство/браузер). Перезагрузи страницу или снизь качество (pixelRatio).";
-    }, false);
   </script>
 </body>
 </html>
