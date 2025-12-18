@@ -1,59 +1,395 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ru">
 <head>
-    <meta charset="utf-8">
-    <title>AR Золотой слиток</title>
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
-</head>
-<body>
-    <a-scene 
-        embedded 
-        xr-mode-ui="enabled: true" 
-        renderer="colorManagement: true; sortObjects: true;"
-        webxr="requiredFeatures: hit-test; optionalFeatures: dom-overlay; overlayElement: #overlay;"
-        background="transparent"
-        ar-hit-test="target: #goldBar"
-        cursor="rayOrigin: mouse"
-        raycaster="objects: .clickable">
-        
-        <!-- Свет для реализма -->
-        <a-entity light="type: ambient; intensity: 0.8"></a-entity>
-        <a-entity light="type: directional; intensity: 1; castShadow: true" position="1 2 1"></a-entity>
-        
-        <!-- 3D слиток золота (простая геометрия для реалистичного золота) -->
-        <a-entity id="goldBar" visible="false" shadow="receive: true">
-            <a-box 
-                depth="0.2" height="0.1" width="0.4"
-                scale="0.5 0.5 0.5"
-                position="0 0.05 0"
-                material="metalness: 1; roughness: 0.2; color: #FFD700; envMapIntensity: 1.5"
-                shadow="cast: true">
-            </a-box>
-            
-            <!-- Надпись на слитке для большего реализма -->
-            <a-text 
-                value="999.9 FINE GOLD" 
-                color="#B8860B" 
-                align="center" 
-                position="0 0.06 0.101" 
-                rotation="0 0 0" 
-                scale="0.3 0.3 0.3">
-            </a-text>
-        </a-entity>
-        
-        <!-- Ретикл (прицел для размещения) -->
-        <a-entity id="reticle" visible="false">
-            <a-ring radius-inner="0.02" radius-outer="0.03" color="#FFFFFF" opacity="0.8"></a-ring>
-        </a-entity>
-        
-        <!-- Камера -->
-        <a-camera></a-camera>
-    </a-scene>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Gold Button → Camera BG + Silver</title>
+  <style>
+    html, body { height:100%; margin:0; overflow:hidden; background:#ffffff; }
+    #app { position:fixed; inset:0; background:#ffffff; }
 
-    <div id="overlay" style="position: fixed; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.5); padding: 10px;">
-        <h2>AR Золотой слиток</h2>
-        <p>Нажмите "AR", разрешите камеру и направьте на поверхность. Слиток появится в центре с реалистичным отражением.</p>
-    </div>
+    /* Видео фоном */
+    #bgVideo{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      z-index:1;
+      opacity:0;
+      transition: opacity 420ms ease;
+      transform: scale(1.03); /* чуть “киношнее” */
+      filter: saturate(1.15) contrast(1.06) brightness(1.02);
+    }
+    /* мягкий “премиум” слой поверх видео */
+    #videoGrade{
+      position:fixed;
+      inset:0;
+      z-index:2;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity 420ms ease;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      background:
+        radial-gradient(60% 40% at 50% 35%, rgba(255,255,255,0.12), rgba(255,255,255,0) 60%),
+        linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.22));
+    }
+
+    /* Canvas 3D поверх всего */
+    canvas{ position:fixed; inset:0; z-index:3; }
+
+    /* стартовый UI */
+    .overlay{
+      position:fixed; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      background:#ffffff;
+      z-index:10;
+      transition: opacity 420ms ease;
+    }
+    .overlay.hide{ opacity:0; pointer-events:none; }
+
+    .cta{
+      position:relative;
+      width:min(360px, 78vw);
+      height:64px;
+      border:none;
+      border-radius:999px;
+      cursor:pointer;
+      color:#1a1200;
+      font: 800 16px/1 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      letter-spacing: .2px;
+      box-shadow:
+        0 18px 40px rgba(214,160,25,.25),
+        0 2px 0 rgba(255,255,255,.45) inset;
+      background: linear-gradient(180deg,#ffe7a6 0%, #ffd36a 22%, #d6a019 70%, #b57e0c 100%);
+      overflow:hidden;
+    }
+    .cta::before{
+      content:"";
+      position:absolute;
+      inset:-40% -20%;
+      transform: rotate(18deg) translateX(-30%);
+      background: linear-gradient(90deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,.40) 35%,
+        rgba(255,255,255,.12) 50%,
+        rgba(255,255,255,0) 70%
+      );
+      animation: shine 2.3s ease-in-out infinite;
+      pointer-events:none;
+    }
+    .cta::after{
+      content:"";
+      position:absolute;
+      left:10px; right:10px; top:10px;
+      height:18px;
+      border-radius:999px;
+      background: rgba(255,255,255,.22);
+      filter: blur(1px);
+      pointer-events:none;
+    }
+    @keyframes shine {
+      0%   { transform: rotate(18deg) translateX(-60%); opacity:.65; }
+      55%  { transform: rotate(18deg) translateX(60%);  opacity:.95; }
+      100% { transform: rotate(18deg) translateX(110%); opacity:.0; }
+    }
+
+    .hint{
+      position:fixed;
+      left:0; right:0; bottom:18px;
+      display:flex; justify-content:center;
+      z-index:10;
+      pointer-events:none;
+      font: 13px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color: rgba(0,0,0,.55);
+      transition: opacity 420ms ease;
+    }
+    .hint.hide{ opacity:0; }
+    .hint span{
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(0,0,0,.08);
+      padding:10px 12px;
+      border-radius: 999px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    /* поток камеры (скрыт) */
+    #cam { display:none; }
+  </style>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <!-- Видео фон (видимое) -->
+  <video id="bgVideo" playsinline muted autoplay></video>
+  <div id="videoGrade"></div>
+
+  <!-- Стартовый экран -->
+  <div class="overlay" id="overlay">
+    <button class="cta" id="startBtn">Включить камеру</button>
+  </div>
+  <div class="hint" id="hint"><span>После нажатия запросит доступ к камере</span></div>
+
+  <!-- скрытый “служебный” (оставим один и тот же поток) -->
+  <video id="cam" playsinline muted autoplay></video>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+    import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+    import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+    import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+    import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
+    const container = document.getElementById("app");
+    const overlay = document.getElementById("overlay");
+    const hint = document.getElementById("hint");
+    const startBtn = document.getElementById("startBtn");
+
+    const cam = document.getElementById("cam");
+    const bgVideo = document.getElementById("bgVideo");
+    const videoGrade = document.getElementById("videoGrade");
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:"high-performance" });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.02;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
+
+    // Scene + Camera
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xffffff);
+
+    const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.05, 100);
+    const HOME = {
+      camPos: new THREE.Vector3(0.0, 0.75, 2.35),
+      target: new THREE.Vector3(0, 0.33, 0)
+    };
+    camera.position.copy(HOME.camPos);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.enablePan = false;
+    controls.enableZoom = true;
+    controls.minDistance = 1.25;
+    controls.maxDistance = 3.2;
+    controls.minPolarAngle = 0.15;
+    controls.maxPolarAngle = Math.PI * 0.49;
+    controls.target.copy(HOME.target);
+    controls.update();
+
+    // Lights
+    const key = new THREE.DirectionalLight(0xffffff, 3.0);
+    key.position.set(2.6, 3.8, 2.2);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048,2048);
+    key.shadow.camera.near = 0.5;
+    key.shadow.camera.far = 12;
+    key.shadow.camera.left = -3;
+    key.shadow.camera.right = 3;
+    key.shadow.camera.top = 3;
+    key.shadow.camera.bottom = -3;
+    key.shadow.bias = -0.00025;
+    scene.add(key);
+
+    const fill = new THREE.DirectionalLight(0xffffff, 1.15);
+    fill.position.set(-2.8, 2.1, 1.2);
+    scene.add(fill);
+
+    const rim = new THREE.DirectionalLight(0xffffff, 1.35);
+    rim.position.set(-1.2, 3.4, -2.8);
+    scene.add(rim);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.22));
+
+    // Ground shadow catcher
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(30,30),
+      new THREE.ShadowMaterial({ opacity: 0.18 })
+    );
+    ground.receiveShadow = true;
+    ground.rotation.x = -Math.PI/2;
+    ground.position.y = 0;
+    scene.add(ground);
+
+    // Bar geometry
+    const W = 1.08, D = 0.58, H = 0.30, R = 0.075;
+    const shape = new THREE.Shape();
+    shape.moveTo(-W/2 + R, -D/2);
+    shape.lineTo(W/2 - R, -D/2);
+    shape.quadraticCurveTo(W/2, -D/2, W/2, -D/2 + R);
+    shape.lineTo(W/2, D/2 - R);
+    shape.quadraticCurveTo(W/2, D/2, W/2 - R, D/2);
+    shape.lineTo(-W/2 + R, D/2);
+    shape.quadraticCurveTo(-W/2, D/2, -W/2, D/2 - R);
+    shape.lineTo(-W/2, -D/2 + R);
+    shape.quadraticCurveTo(-W/2, -D/2, -W/2 + R, -D/2);
+
+    const geom = new THREE.ExtrudeGeometry(shape, {
+      depth: H,
+      bevelEnabled: true,
+      bevelThickness: 0.036,
+      bevelSize: 0.038,
+      bevelSegments: 10,
+      curveSegments: 16,
+      steps: 1
+    });
+    geom.center();
+    geom.rotateX(Math.PI / 2);
+
+    // Silver material (final)
+    const silverMat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(0.95, 0.96, 1.0),
+      metalness: 1.0,
+      roughness: 0.085,
+      clearcoat: 0.55,
+      clearcoatRoughness: 0.12,
+      reflectivity: 1.0,
+      ior: 1.5,
+      envMapIntensity: 1.9
+    });
+
+    const bar = new THREE.Mesh(geom, silverMat);
+    bar.castShadow = true;
+    bar.position.set(0, 0.36, 0);
+    bar.rotation.set(0.09, 0.50, 0.02);
+    scene.add(bar);
+
+    // Stable camera reflection (CubeCamera)
+    let camSphere = null;
+    let cubeRT = null;
+    let cubeCam = null;
+    let camOn = false;
+    let lastCubeUpdate = 0;
+
+    function setupCameraEnv(videoTexture) {
+      const sphereGeo = new THREE.SphereGeometry(10, 48, 32);
+      sphereGeo.scale(-1, 1, 1);
+      const sphereMat = new THREE.MeshBasicMaterial({ map: videoTexture });
+      camSphere = new THREE.Mesh(sphereGeo, sphereMat);
+      camSphere.visible = false;
+      scene.add(camSphere);
+
+      cubeRT = new THREE.WebGLCubeRenderTarget(256, {
+        generateMipmaps: true,
+        minFilter: THREE.LinearMipmapLinearFilter,
+        colorSpace: THREE.SRGBColorSpace
+      });
+      cubeCam = new THREE.CubeCamera(0.1, 50, cubeRT);
+
+      scene.environment = cubeRT.texture;
+    }
+
+    // Post
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.22, 0.55, 0.25);
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+
+    async function startCamera() {
+      try {
+        hint.querySelector("span").textContent = "Запрашиваю камеру…";
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment", width:{ ideal:1280 }, height:{ ideal:720 } },
+          audio: false
+        });
+
+        // один поток — в два video (фон + текстура)
+        cam.srcObject = stream;
+        bgVideo.srcObject = stream;
+
+        await Promise.all([cam.play(), bgVideo.play()]);
+
+        // теперь фон реально видно
+        bgVideo.style.opacity = "1";
+        videoGrade.style.opacity = "1";
+
+        const vidTex = new THREE.VideoTexture(cam);
+        vidTex.colorSpace = THREE.SRGBColorSpace;
+        vidTex.minFilter = THREE.LinearFilter;
+        vidTex.magFilter = THREE.LinearFilter;
+        vidTex.generateMipmaps = false;
+
+        setupCameraEnv(vidTex);
+        camOn = true;
+
+        // Убираем белый экран/подсказку
+        overlay.classList.add("hide");
+        hint.classList.add("hide");
+
+        // через 500мс можно вообще убрать из DOM, но и так норм
+      } catch (e) {
+        console.error(e);
+        hint.querySelector("span").textContent =
+          "Не получилось включить камеру. Открой по HTTPS/localhost и разреши доступ.";
+      }
+    }
+
+    startBtn.addEventListener("click", startCamera);
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      hint.querySelector("span").textContent = "Этот браузер не поддерживает камеру (getUserMedia).";
+      startBtn.disabled = true;
+    }
+
+    // Animate
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      bar.rotation.y = 0.50 + Math.sin(t * 0.55) * 0.085;
+      bar.rotation.x = 0.09 + Math.sin(t * 0.9) * 0.02;
+
+      // keep centered (no-lost)
+      const snap = 0.06;
+      controls.target.lerp(HOME.target, snap);
+      camera.position.lerp(HOME.camPos, snap);
+      camera.lookAt(controls.target);
+
+      // update env 6 fps
+      if (camOn && camSphere && cubeCam) {
+        const now = performance.now();
+        if (now - lastCubeUpdate > 160) {
+          camSphere.visible = true;
+          cubeCam.update(renderer, scene);
+          camSphere.visible = false;
+          lastCubeUpdate = now;
+        }
+      }
+
+      controls.update();
+      composer.render();
+    }
+    animate();
+
+    addEventListener("resize", () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+      composer.setSize(innerWidth, innerHeight);
+      bloom.setSize(innerWidth, innerHeight);
+    });
+  </script>
 </body>
 </html>
