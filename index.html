@@ -3,43 +3,36 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Gold Bar + Camera Reflection</title>
+  <title>Gold Bar AR Reflection (Max)</title>
   <style>
-    html, body { height: 100%; margin: 0; background:#0b0b0f; overflow:hidden; }
+    html, body { height:100%; margin:0; background:#06060a; overflow:hidden; }
     #app { position:fixed; inset:0; }
     .hud{
-      position:fixed; left:12px; right:12px; top:12px;
-      display:flex; gap:10px; align-items:center; justify-content:space-between;
-      font: 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      color: rgba(255,255,255,.85);
+      position:fixed; left:14px; right:14px; top:14px; display:flex; gap:10px;
+      align-items:center; justify-content:space-between;
+      font: 14px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color: rgba(255,255,255,.88);
       pointer-events:none;
-      text-shadow: 0 2px 10px rgba(0,0,0,.6);
+      text-shadow: 0 2px 14px rgba(0,0,0,.75);
     }
     .pill{
       pointer-events:auto;
-      background: rgba(255,255,255,.08);
+      background: rgba(255,255,255,.07);
       border: 1px solid rgba(255,255,255,.14);
-      padding: 10px 12px;
-      border-radius: 14px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      padding: 10px 12px; border-radius: 14px;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      max-width:min(62ch, 70vw);
     }
     button{
-      pointer-events:auto;
-      cursor:pointer;
-      border:none;
-      color:#111;
-      background: linear-gradient(180deg,#ffd36a,#d59b1f);
-      padding:10px 12px;
-      border-radius: 12px;
-      font-weight:700;
-      box-shadow: 0 10px 25px rgba(213,155,31,.25);
+      pointer-events:auto; cursor:pointer; border:none; color:#111;
+      background: linear-gradient(180deg,#ffe08a,#d6a019);
+      padding:10px 12px; border-radius:12px; font-weight:800;
+      box-shadow: 0 14px 35px rgba(214,160,25,.22);
     }
     button:active{ transform: translateY(1px); }
-    #note{ max-width:min(560px,100%); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
   </style>
 
-  <!-- Three.js via importmap -->
   <script type="importmap">
     {
       "imports": {
@@ -49,21 +42,18 @@
     }
   </script>
 </head>
-
 <body>
   <div id="app"></div>
 
   <div class="hud">
     <div class="pill" id="note">
-      Нажми “Включить камеру”. Видео станет окружением — слиток будет отражать реальный мир.
-      (Если не даёт камеру: открой по HTTPS или localhost.)
+      Нажми “Камера” — отражения на золоте будут из реального мира. (Нужен HTTPS/localhost)
     </div>
     <div class="pill" style="display:flex; gap:10px; align-items:center;">
-      <button id="startBtn">Включить камеру</button>
+      <button id="startBtn">Камера</button>
     </div>
   </div>
 
-  <!-- Скрытый видеопоток камеры -->
   <video id="cam" playsinline muted autoplay style="display:none"></video>
 
   <script type="module">
@@ -71,209 +61,246 @@
     import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 
+    import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+    import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+    import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+    import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
     const container = document.getElementById("app");
     const startBtn = document.getElementById("startBtn");
     const note = document.getElementById("note");
     const video = document.getElementById("cam");
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    // ===== Renderer (max quality but sane for phones) =====
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: false,
+      powerPreference: "high-performance"
+    });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    renderer.toneMappingExposure = 1.05;
+    renderer.physicallyCorrectLights = true;
+
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
     container.appendChild(renderer.domElement);
 
-    // Scene + Camera
+    // ===== Scene / Camera =====
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 100);
-    camera.position.set(0.0, 0.7, 2.2);
+    scene.background = new THREE.Color(0x06060a);
 
-    // Controls
+    const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.05, 100);
+    camera.position.set(0.0, 0.75, 2.35);
+
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.minDistance = 1.2;
-    controls.maxDistance = 4.5;
-    controls.target.set(0, 0.35, 0);
+    controls.dampingFactor = 0.07;
+    controls.minDistance = 1.15;
+    controls.maxDistance = 4.3;
+    controls.target.set(0, 0.33, 0);
 
-    // Soft studio lighting (чтобы золото “читалось”, даже без камеры)
-    const key = new THREE.DirectionalLight(0xffffff, 2.2);
-    key.position.set(2, 3, 2);
+    // ===== Lights (studio-like) =====
+    const key = new THREE.DirectionalLight(0xffffff, 3.2);
+    key.position.set(2.6, 3.8, 2.2);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.camera.near = 0.5;
+    key.shadow.camera.far = 12;
+    key.shadow.camera.left = -3;
+    key.shadow.camera.right = 3;
+    key.shadow.camera.top = 3;
+    key.shadow.camera.bottom = -3;
+    key.shadow.bias = -0.00025;
     scene.add(key);
 
-    const fill = new THREE.DirectionalLight(0xffffff, 0.9);
-    fill.position.set(-2, 1.5, 1);
+    const fill = new THREE.DirectionalLight(0xffffff, 1.15);
+    fill.position.set(-2.8, 2.1, 1.2);
     scene.add(fill);
 
-    const rim = new THREE.DirectionalLight(0xffffff, 1.2);
-    rim.position.set(-1, 2.5, -2);
+    const rim = new THREE.DirectionalLight(0xffffff, 1.65);
+    rim.position.set(-1.2, 3.4, -2.8);
     scene.add(rim);
 
-    const amb = new THREE.AmbientLight(0xffffff, 0.15);
+    const amb = new THREE.AmbientLight(0xffffff, 0.18);
     scene.add(amb);
 
-    // Ground (чуть отражающий)
+    // ===== Ground with shadow catcher =====
     const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(20, 20),
-      new THREE.MeshStandardMaterial({
-        color: 0x05050a,
-        metalness: 0.2,
-        roughness: 0.7
-      })
+      new THREE.PlaneGeometry(30, 30),
+      new THREE.ShadowMaterial({ opacity: 0.28 })
     );
+    ground.receiveShadow = true;
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = 0;
     scene.add(ground);
 
-    // === GOLD BAR (3D) ===
-    // Геометрия “слитка”: прямоугольник с фасками
-    const w = 1.05, h = 0.28, d = 0.55;
-    const shape = new THREE.Shape();
-    const r = 0.06; // радиус фаски
-    shape.moveTo(-w/2 + r, -d/2);
-    shape.lineTo(w/2 - r, -d/2);
-    shape.quadraticCurveTo(w/2, -d/2, w/2, -d/2 + r);
-    shape.lineTo(w/2, d/2 - r);
-    shape.quadraticCurveTo(w/2, d/2, w/2 - r, d/2);
-    shape.lineTo(-w/2 + r, d/2);
-    shape.quadraticCurveTo(-w/2, d/2, -w/2, d/2 - r);
-    shape.lineTo(-w/2, -d/2 + r);
-    shape.quadraticCurveTo(-w/2, -d/2, -w/2 + r, -d/2);
+    // ===== Gold bar geometry (bevelled) =====
+    const W = 1.08, D = 0.58, H = 0.30, R = 0.075;
 
-    const extrude = new THREE.ExtrudeGeometry(shape, {
-      depth: h,
+    const shape = new THREE.Shape();
+    shape.moveTo(-W/2 + R, -D/2);
+    shape.lineTo(W/2 - R, -D/2);
+    shape.quadraticCurveTo(W/2, -D/2, W/2, -D/2 + R);
+    shape.lineTo(W/2, D/2 - R);
+    shape.quadraticCurveTo(W/2, D/2, W/2 - R, D/2);
+    shape.lineTo(-W/2 + R, D/2);
+    shape.quadraticCurveTo(-W/2, D/2, -W/2, D/2 - R);
+    shape.lineTo(-W/2, -D/2 + R);
+    shape.quadraticCurveTo(-W/2, -D/2, -W/2 + R, -D/2);
+
+    const geom = new THREE.ExtrudeGeometry(shape, {
+      depth: H,
       bevelEnabled: true,
-      bevelThickness: 0.03,
-      bevelSize: 0.03,
-      bevelSegments: 6,
-      curveSegments: 10,
+      bevelThickness: 0.036,
+      bevelSize: 0.038,
+      bevelSegments: 10,
+      curveSegments: 16,
       steps: 1
     });
-    extrude.center();
-    extrude.rotateX(Math.PI / 2);
+    geom.center();
+    geom.rotateX(Math.PI / 2);
 
+    // ===== Ultra material (Physical) =====
     const goldMat = new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color(1.0, 0.78, 0.2),
+      color: new THREE.Color(1.0, 0.79, 0.22),
       metalness: 1.0,
-      roughness: 0.12,          // чем меньше — тем зеркальнее
-      clearcoat: 0.45,
-      clearcoatRoughness: 0.18,
-      envMapIntensity: 1.35
+      roughness: 0.075,          // больше “зеркала”
+      clearcoat: 0.55,
+      clearcoatRoughness: 0.12,
+      reflectivity: 1.0,
+      ior: 1.5,
+      envMapIntensity: 1.6
     });
 
-    const gold = new THREE.Mesh(extrude, goldMat);
+    const gold = new THREE.Mesh(geom, goldMat);
+    gold.castShadow = true;
+    gold.receiveShadow = false;
     gold.position.set(0, 0.36, 0);
-    gold.rotation.set(0.08, 0.45, 0);
+    gold.rotation.set(0.09, 0.50, 0.02);
     scene.add(gold);
 
-    // Текст “золото” (простая гравировка)
-    const stampGeo = new THREE.PlaneGeometry(0.62, 0.18);
-    const stampMat = new THREE.MeshStandardMaterial({
-      color: 0x221a00,
-      metalness: 0.2,
-      roughness: 0.7
-    });
-    const stamp = new THREE.Mesh(stampGeo, stampMat);
-    stamp.position.set(0, 0.53, 0.02);
-    stamp.rotation.set(-Math.PI/2, 0, 0.45);
+    // “Гравировка-плашка” (простая, но даёт правдоподобие)
+    const stamp = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.64, 0.20),
+      new THREE.MeshStandardMaterial({
+        color: 0x1f1700,
+        metalness: 0.25,
+        roughness: 0.7
+      })
+    );
+    stamp.position.set(0, 0.525, 0.03);
+    stamp.rotation.set(-Math.PI/2, 0, 0.50);
+    stamp.receiveShadow = false;
+    stamp.castShadow = false;
     scene.add(stamp);
 
-    // === ENVIRONMENT: HDR (fallback) + CAMERA VIDEO (when allowed) ===
-    // Фоллбек HDR (чтобы сразу красиво выглядело)
+    // ===== Environment: HDR fallback + Camera env =====
     const pmrem = new THREE.PMREMGenerator(renderer);
     pmrem.compileEquirectangularShader();
 
-    let cameraEnvTex = null;
-
-    // Загрузим лёгкий HDR окружение (если камера не включена — всё равно красиво)
+    let hdrEnv = null;
     new RGBELoader()
       .setPath("https://raw.githubusercontent.com/pmndrs/drei-assets/master/hdri/")
       .load("potsdamer_platz_1k.hdr", (hdr) => {
-        const env = pmrem.fromEquirectangular(hdr).texture;
-        scene.environment = env;
-        scene.background = new THREE.Color(0x0b0b0f);
+        hdrEnv = pmrem.fromEquirectangular(hdr).texture;
+        scene.environment = hdrEnv;
         hdr.dispose();
       });
+
+    let camState = null; // { vidTex, lastUpdate, cachedEnvTex }
 
     async function startCamera() {
       try {
         note.textContent = "Запрашиваю камеру…";
-
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
+          video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: false
         });
 
         video.srcObject = stream;
         await video.play();
 
-        // Делаем текстуру из видео
         const vidTex = new THREE.VideoTexture(video);
         vidTex.colorSpace = THREE.SRGBColorSpace;
         vidTex.minFilter = THREE.LinearFilter;
         vidTex.magFilter = THREE.LinearFilter;
         vidTex.generateMipmaps = false;
 
-        // Переводим видеотекстуру в envMap через PMREM (для PBR-отражений)
-        // Обновляем периодически, иначе будет тяжело для устройства.
-        cameraEnvTex = { vidTex, lastUpdate: 0 };
+        camState = { vidTex, lastUpdate: 0, cachedEnvTex: null };
 
-        note.textContent = "Камера включена ✅ Теперь слиток отражает реальный мир.";
-        startBtn.textContent = "Камера включена";
+        note.textContent = "Камера включена ✅ Отражения идут с камеры (реалистично).";
+        startBtn.textContent = "OK";
         startBtn.disabled = true;
 
-      } catch (err) {
-        console.error(err);
-        note.textContent =
-          "Не вышло получить доступ к камере. Проверь: HTTPS/localhost, разрешения в браузере и чтобы камера не была занята.";
+      } catch (e) {
+        console.error(e);
+        note.textContent = "Не удалось включить камеру. Открой по HTTPS/localhost и разреши доступ к камере.";
       }
     }
 
     startBtn.addEventListener("click", startCamera);
 
-    // Animation loop
+    if (!navigator.mediaDevices?.getUserMedia) {
+      note.textContent = "Этот браузер не поддерживает доступ к камере (getUserMedia).";
+      startBtn.disabled = true;
+    }
+
+    // ===== Postprocessing (cinematic + bloom) =====
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+
+    const bloom = new UnrealBloomPass(
+      new THREE.Vector2(innerWidth, innerHeight),
+      0.35,  // strength
+      0.55,  // radius
+      0.22   // threshold
+    );
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+
+    // ===== Animation =====
     const clock = new THREE.Clock();
 
     function animate() {
       requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
 
-      // Лёгкое “живое” движение
-      gold.rotation.y = 0.45 + Math.sin(t * 0.6) * 0.08;
-      gold.rotation.x = 0.08 + Math.sin(t * 0.9) * 0.02;
+      // subtle motion = “дороже выглядит”
+      gold.rotation.y = 0.50 + Math.sin(t * 0.55) * 0.085;
+      gold.rotation.x = 0.09 + Math.sin(t * 0.9) * 0.02;
 
-      // Если камера включена — обновляем envMap не каждый кадр (экономим батарейку)
-      if (cameraEnvTex) {
+      // Camera -> PMREM env update (rate-limited, not every frame)
+      if (camState) {
         const now = performance.now();
-        if (now - cameraEnvTex.lastUpdate > 140) { // ~7 раз/сек
-          const envRT = pmrem.fromEquirectangular(cameraEnvTex.vidTex).texture;
-          if (scene.environment && scene.environment !== envRT) {
-            // аккуратно освобождаем старое окружение от PMREM (кроме HDR-fallback, его не трогаем)
-            // (в реале можно вести ссылки — здесь проще)
-          }
-          scene.environment = envRT;
-          goldMat.envMapIntensity = 1.55;
-          cameraEnvTex.lastUpdate = now;
+        if (now - camState.lastUpdate > 180) { // ~5-6 раз/сек
+          // dispose previous env tex from PMREM to avoid memory growth
+          if (camState.cachedEnvTex) camState.cachedEnvTex.dispose();
+
+          camState.cachedEnvTex = pmrem.fromEquirectangular(camState.vidTex).texture;
+          scene.environment = camState.cachedEnvTex;
+          goldMat.envMapIntensity = 1.75;
+          camState.lastUpdate = now;
         }
       }
 
       controls.update();
-      renderer.render(scene, camera);
+      composer.render();
     }
     animate();
 
     addEventListener("resize", () => {
       camera.aspect = innerWidth / innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(innerWidth, innerHeight);
-    });
 
-    // Если getUserMedia недоступен — сразу скажем честно
-    if (!navigator.mediaDevices?.getUserMedia) {
-      note.textContent = "Этот браузер не поддерживает доступ к камере через getUserMedia.";
-      startBtn.disabled = true;
-    }
+      renderer.setSize(innerWidth, innerHeight);
+      composer.setSize(innerWidth, innerHeight);
+
+      bloom.setSize(innerWidth, innerHeight);
+    });
   </script>
 </body>
 </html>
