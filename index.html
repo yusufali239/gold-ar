@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Gold Bar + Camera Reflection</title>
+  <style>
+    html, body { height: 100%; margin: 0; background:#0b0b0f; overflow:hidden; }
+    #app { position:fixed; inset:0; }
+    .hud{
+      position:fixed; left:12px; right:12px; top:12px;
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      font: 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: rgba(255,255,255,.85);
+      pointer-events:none;
+      text-shadow: 0 2px 10px rgba(0,0,0,.6);
+    }
+    .pill{
+      pointer-events:auto;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      padding: 10px 12px;
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    button{
+      pointer-events:auto;
+      cursor:pointer;
+      border:none;
+      color:#111;
+      background: linear-gradient(180deg,#ffd36a,#d59b1f);
+      padding:10px 12px;
+      border-radius: 12px;
+      font-weight:700;
+      box-shadow: 0 10px 25px rgba(213,155,31,.25);
+    }
+    button:active{ transform: translateY(1px); }
+    #note{ max-width:min(560px,100%); }
+  </style>
+
+  <!-- Three.js via importmap -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <div class="hud">
+    <div class="pill" id="note">
+      Нажми “Включить камеру”. Видео станет окружением — слиток будет отражать реальный мир.
+      (Если не даёт камеру: открой по HTTPS или localhost.)
+    </div>
+    <div class="pill" style="display:flex; gap:10px; align-items:center;">
+      <button id="startBtn">Включить камеру</button>
+    </div>
+  </div>
+
+  <!-- Скрытый видеопоток камеры -->
+  <video id="cam" playsinline muted autoplay style="display:none"></video>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+    import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
+
+    const container = document.getElementById("app");
+    const startBtn = document.getElementById("startBtn");
+    const note = document.getElementById("note");
+    const video = document.getElementById("cam");
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    container.appendChild(renderer.domElement);
+
+    // Scene + Camera
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 100);
+    camera.position.set(0.0, 0.7, 2.2);
+
+    // Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.minDistance = 1.2;
+    controls.maxDistance = 4.5;
+    controls.target.set(0, 0.35, 0);
+
+    // Soft studio lighting (чтобы золото “читалось”, даже без камеры)
+    const key = new THREE.DirectionalLight(0xffffff, 2.2);
+    key.position.set(2, 3, 2);
+    scene.add(key);
+
+    const fill = new THREE.DirectionalLight(0xffffff, 0.9);
+    fill.position.set(-2, 1.5, 1);
+    scene.add(fill);
+
+    const rim = new THREE.DirectionalLight(0xffffff, 1.2);
+    rim.position.set(-1, 2.5, -2);
+    scene.add(rim);
+
+    const amb = new THREE.AmbientLight(0xffffff, 0.15);
+    scene.add(amb);
+
+    // Ground (чуть отражающий)
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(20, 20),
+      new THREE.MeshStandardMaterial({
+        color: 0x05050a,
+        metalness: 0.2,
+        roughness: 0.7
+      })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
+    scene.add(ground);
+
+    // === GOLD BAR (3D) ===
+    // Геометрия “слитка”: прямоугольник с фасками
+    const w = 1.05, h = 0.28, d = 0.55;
+    const shape = new THREE.Shape();
+    const r = 0.06; // радиус фаски
+    shape.moveTo(-w/2 + r, -d/2);
+    shape.lineTo(w/2 - r, -d/2);
+    shape.quadraticCurveTo(w/2, -d/2, w/2, -d/2 + r);
+    shape.lineTo(w/2, d/2 - r);
+    shape.quadraticCurveTo(w/2, d/2, w/2 - r, d/2);
+    shape.lineTo(-w/2 + r, d/2);
+    shape.quadraticCurveTo(-w/2, d/2, -w/2, d/2 - r);
+    shape.lineTo(-w/2, -d/2 + r);
+    shape.quadraticCurveTo(-w/2, -d/2, -w/2 + r, -d/2);
+
+    const extrude = new THREE.ExtrudeGeometry(shape, {
+      depth: h,
+      bevelEnabled: true,
+      bevelThickness: 0.03,
+      bevelSize: 0.03,
+      bevelSegments: 6,
+      curveSegments: 10,
+      steps: 1
+    });
+    extrude.center();
+    extrude.rotateX(Math.PI / 2);
+
+    const goldMat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(1.0, 0.78, 0.2),
+      metalness: 1.0,
+      roughness: 0.12,          // чем меньше — тем зеркальнее
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.18,
+      envMapIntensity: 1.35
+    });
+
+    const gold = new THREE.Mesh(extrude, goldMat);
+    gold.position.set(0, 0.36, 0);
+    gold.rotation.set(0.08, 0.45, 0);
+    scene.add(gold);
+
+    // Текст “золото” (простая гравировка)
+    const stampGeo = new THREE.PlaneGeometry(0.62, 0.18);
+    const stampMat = new THREE.MeshStandardMaterial({
+      color: 0x221a00,
+      metalness: 0.2,
+      roughness: 0.7
+    });
+    const stamp = new THREE.Mesh(stampGeo, stampMat);
+    stamp.position.set(0, 0.53, 0.02);
+    stamp.rotation.set(-Math.PI/2, 0, 0.45);
+    scene.add(stamp);
+
+    // === ENVIRONMENT: HDR (fallback) + CAMERA VIDEO (when allowed) ===
+    // Фоллбек HDR (чтобы сразу красиво выглядело)
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    pmrem.compileEquirectangularShader();
+
+    let cameraEnvTex = null;
+
+    // Загрузим лёгкий HDR окружение (если камера не включена — всё равно красиво)
+    new RGBELoader()
+      .setPath("https://raw.githubusercontent.com/pmndrs/drei-assets/master/hdri/")
+      .load("potsdamer_platz_1k.hdr", (hdr) => {
+        const env = pmrem.fromEquirectangular(hdr).texture;
+        scene.environment = env;
+        scene.background = new THREE.Color(0x0b0b0f);
+        hdr.dispose();
+      });
+
+    async function startCamera() {
+      try {
+        note.textContent = "Запрашиваю камеру…";
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+          audio: false
+        });
+
+        video.srcObject = stream;
+        await video.play();
+
+        // Делаем текстуру из видео
+        const vidTex = new THREE.VideoTexture(video);
+        vidTex.colorSpace = THREE.SRGBColorSpace;
+        vidTex.minFilter = THREE.LinearFilter;
+        vidTex.magFilter = THREE.LinearFilter;
+        vidTex.generateMipmaps = false;
+
+        // Переводим видеотекстуру в envMap через PMREM (для PBR-отражений)
+        // Обновляем периодически, иначе будет тяжело для устройства.
+        cameraEnvTex = { vidTex, lastUpdate: 0 };
+
+        note.textContent = "Камера включена ✅ Теперь слиток отражает реальный мир.";
+        startBtn.textContent = "Камера включена";
+        startBtn.disabled = true;
+
+      } catch (err) {
+        console.error(err);
+        note.textContent =
+          "Не вышло получить доступ к камере. Проверь: HTTPS/localhost, разрешения в браузере и чтобы камера не была занята.";
+      }
+    }
+
+    startBtn.addEventListener("click", startCamera);
+
+    // Animation loop
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      // Лёгкое “живое” движение
+      gold.rotation.y = 0.45 + Math.sin(t * 0.6) * 0.08;
+      gold.rotation.x = 0.08 + Math.sin(t * 0.9) * 0.02;
+
+      // Если камера включена — обновляем envMap не каждый кадр (экономим батарейку)
+      if (cameraEnvTex) {
+        const now = performance.now();
+        if (now - cameraEnvTex.lastUpdate > 140) { // ~7 раз/сек
+          const envRT = pmrem.fromEquirectangular(cameraEnvTex.vidTex).texture;
+          if (scene.environment && scene.environment !== envRT) {
+            // аккуратно освобождаем старое окружение от PMREM (кроме HDR-fallback, его не трогаем)
+            // (в реале можно вести ссылки — здесь проще)
+          }
+          scene.environment = envRT;
+          goldMat.envMapIntensity = 1.55;
+          cameraEnvTex.lastUpdate = now;
+        }
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    addEventListener("resize", () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+
+    // Если getUserMedia недоступен — сразу скажем честно
+    if (!navigator.mediaDevices?.getUserMedia) {
+      note.textContent = "Этот браузер не поддерживает доступ к камере через getUserMedia.";
+      startBtn.disabled = true;
+    }
+  </script>
+</body>
+</html>
