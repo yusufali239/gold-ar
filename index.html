@@ -3,1101 +3,682 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دليل دراسة علم الميراث والفرائض</title>
+    <title>المراجعة النهائية: علم الفرائض</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary-color: #0f5132; /* لون إسلامي/أكاديمي */
+            --secondary-color: #d4ac0d; /* ذهبي */
+            --bg-light: #f8f9fa;
+            --text-dark: #2c3e50;
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 20px;
-        }
-        
-        .main-content {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .calculator {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            max-height: 90vh;
-            overflow-y: auto;
-            position: sticky;
-            top: 20px;
-        }
-        
-        h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        h2 {
-            color: #764ba2;
-            margin: 25px 0 15px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
-            font-size: 1.8em;
-        }
-        
-        h3 {
-            color: #667eea;
-            margin: 20px 0 10px;
-            font-size: 1.4em;
-        }
-        
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .tab {
-            padding: 12px 24px;
-            background: #f0f0f0;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        
-        .tab:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
-        }
-        
-        .tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .content-section {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
-        
-        .content-section.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .card {
-            background: #f8f9ff;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 10px;
-            border-right: 5px solid #667eea;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
-        }
-        
-        .card:hover {
-            transform: translateX(-5px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        
-        .highlight {
-            background: #fff3cd;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            border-right: 4px solid #ffc107;
-        }
-        
-        .verse {
-            background: #d4edda;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            border-right: 4px solid #28a745;
-            font-style: italic;
-        }
-        
-        ul, ol {
-            margin: 15px 0;
-            padding-right: 30px;
-        }
-        
-        li {
-            margin: 8px 0;
+            font-family: 'Amiri', serif;
+            background-color: #f4f6f7;
+            color: var(--text-dark);
             line-height: 1.8;
         }
-        
-        .calc-title {
-            color: #667eea;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            text-align: center;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #764ba2;
+
+        h1, h2, h3, h4, .btn {
+            font-family: 'Tajawal', sans-serif;
         }
-        
-        .heir-group {
-            margin: 15px 0;
+
+        .header-section {
+            background: linear-gradient(135deg, var(--primary-color), #146c43);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 5px solid var(--secondary-color);
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            margin-bottom: 1.5rem;
+            background: white;
+            overflow: hidden;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header-custom {
+            background-color: rgba(15, 81, 50, 0.05);
+            border-bottom: 2px solid var(--secondary-color);
+            padding: 1rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .highlight-box {
+            background-color: #e8f5e9;
+            border-right: 4px solid var(--primary-color);
             padding: 15px;
-            background: #f8f9ff;
-            border-radius: 8px;
+            margin: 10px 0;
+            border-radius: 4px;
         }
-        
-        .heir-group h4 {
-            color: #764ba2;
-            margin-bottom: 10px;
+
+        .share-badge {
             font-size: 1.1em;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
         }
-        
-        .checkbox-item {
+
+        /* Calculator Styles */
+        .calc-section {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--secondary-color);
+        }
+
+        .checkbox-wrapper {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 8px 0;
-            padding: 8px;
-            border-radius: 5px;
-            transition: background 0.2s;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            cursor: pointer;
         }
-        
-        .checkbox-item:hover {
-            background: #e8e9ff;
+
+        .checkbox-wrapper:hover {
+            background-color: #f8f9fa;
+            border-color: var(--primary-color);
         }
-        
-        .checkbox-item input[type="checkbox"] {
+
+        .checkbox-wrapper input {
             width: 20px;
             height: 20px;
-            cursor: pointer;
+            margin-left: 10px;
+            accent-color: var(--primary-color);
         }
-        
-        .checkbox-item label {
-            cursor: pointer;
-            font-size: 15px;
-        }
-        
-        .result-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        .result-table th {
+            background-color: var(--primary-color);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .result-box h3 {
-            color: white;
-            margin-bottom: 15px;
-        }
-        
-        .result-item {
-            background: rgba(255,255,255,0.2);
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .btn-calculate {
-            width: 100%;
-            padding: 15px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: all 0.3s;
-        }
-        
-        .btn-calculate:hover {
-            background: #218838;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
-        }
-        
-        .btn-reset {
-            width: 100%;
-            padding: 12px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.3s;
-        }
-        
-        .btn-reset:hover {
-            background: #c82333;
-            transform: translateY(-2px);
-        }
-        
-        @media (max-width: 1024px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-            
-            .calculator {
-                position: static;
-                max-height: none;
-            }
-        }
-        
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-        }
-        
-        .number-input {
-            width: 60px;
-            padding: 5px;
-            margin-right: 10px;
-            border: 2px solid #667eea;
-            border-radius: 5px;
-            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="main-content">
-            <h1>🕌 دليل دراسة علم الميراث والفرائض</h1>
-            
-            <div class="tabs">
-                <button class="tab active" onclick="showTab('basics')">المقدمة والتعاريف</button>
-                <button class="tab" onclick="showTab('shares')">السهام المقدرة</button>
-                <button class="tab" onclick="showTab('heirs')">أحوال الورثة</button>
-                <button class="tab" onclick="showTab('asaba')">العصبة</button>
-                <button class="tab" onclick="showTab('hajb')">الحجب</button>
-            </div>
-            
-            <div id="basics" class="content-section active">
-                <h2>📚 المقدمة والتعاريف الأساسية</h2>
-                
-                <div class="card">
-                    <h3>تعريف الميراث</h3>
-                    <p><strong>لغة:</strong> مصدر من وَرِثَ يَرِثُ، ومعناه: انتقال شيء من شخص إلى شخص آخر</p>
-                    <p><strong>اصطلاحاً:</strong> عبارة عن انتقال ملك أحد بسبب الموت إلى ورثته الشرعية</p>
-                </div>
-                
-                <div class="card">
-                    <h3>تعريف علم الفرائض</h3>
-                    <p>علم يبحث فيه عن انتقال ملك الميت إلى ورثته الأحياء، وعن أحوال تلك الورثة، وعن السهام المقدرة لكل واحد منهم، وعن تقسيمها</p>
-                </div>
-                
-                <div class="highlight">
-                    <h3>🎯 موضوع علم الميراث</h3>
-                    <p>السهام المقدرة ومستحقوها، أو التركة ومستحقها وقسمتها</p>
-                </div>
-                
-                <div class="highlight">
-                    <h3>✨ غاية علم الميراث</h3>
-                    <p>إيصال الحقوق (السهام) إلى الورثة أعني إلى مستحقيها، أو حفظ حقوق الأرامل والأيتام عن الضياع</p>
-                </div>
-                
-                <div class="card">
-                    <h3>مصادر علم الميراث</h3>
-                    <ol>
-                        <li><strong>الكتاب:</strong> آيات الميراث في سورة النساء والأنفال والأحزاب</li>
-                        <li><strong>السنة:</strong> أحاديث النبي ﷺ في الفرائض</li>
-                        <li><strong>الإجماع:</strong> إجماع الصحابة والتابعين</li>
-                    </ol>
-                </div>
-                
-                <div class="verse">
-                    <strong>الحديث الأساسي:</strong> «ألحقوا الفرائض بأهلها فما بقي فلأولى رجل ذكر» (متفق عليه)
-                </div>
-                
-                <h2>📋 المصطلحات الأساسية</h2>
-                
-                <div class="card">
-                    <ul>
-                        <li><strong>الفرض:</strong> النصيب المقرر شرعاً للوارث</li>
-                        <li><strong>السهم:</strong> الجزء المعيّن الذي يعطى لكل وارث</li>
-                        <li><strong>التركة:</strong> ما تركه الميت من الأموال والحقوق</li>
-                        <li><strong>النسب:</strong> البنوة والأبوة والإدلاء بأحدهما</li>
-                        <li><strong>الوارث:</strong> من يستحق سهماً من التركة</li>
-                        <li><strong>العصبة:</strong> من لا يكون له سهم مقدر ويأخذ ما بقي</li>
-                        <li><strong>الإدلاء:</strong> النسبة إلى الميت بأي طريق</li>
-                    </ul>
-                </div>
-                
-                <h2>🏛️ أركان الميراث</h2>
-                <div class="card">
-                    <ol>
-                        <li><strong>المورث:</strong> الميت الذي ترك ميراثاً</li>
-                        <li><strong>الوارث:</strong> الذي يستحق الميراث بسبب من أسباب الإرث</li>
-                        <li><strong>الموروث:</strong> التركة والميراث</li>
-                    </ol>
-                </div>
-                
-                <h2>🔗 أسباب الإرث</h2>
-                <div class="card">
-                    <ol>
-                        <li><strong>الزوجية</strong></li>
-                        <li><strong>القرابة</strong></li>
-                        <li><strong>الولاء:</strong> ولاء العتق وولاء الموالاة</li>
-                    </ol>
-                </div>
-                
-                <h2>✅ شروط الإرث</h2>
-                <div class="highlight">
-                    <ol>
-                        <li>موت المورث</li>
-                        <li>حياة الوارث</li>
-                        <li>انتفاء الموانع (القتل، الرق، اختلاف الدين)</li>
-                    </ol>
-                </div>
-                
-                <h2>🚫 موانع الإرث الأربعة</h2>
-                <div class="card">
-                    <ol>
-                        <li><strong>الرق:</strong> القن، المكاتب، المدبر، أم الولد</li>
-                        <li><strong>القتل:</strong> الموجب للقصاص أو الكفارة</li>
-                        <li><strong>اختلاف الدين:</strong> لا يرث الكافر المسلم ولا المسلم الكافر</li>
-                        <li><strong>اختلاف الدارين:</strong> بالنسبة للكفار القاطنين في دار الإسلام</li>
-                    </ol>
-                </div>
-                
-                <h2>📊 الحقوق المتعلقة بتركة الميت (مرتبة)</h2>
-                <div class="card">
-                    <ol>
-                        <li>تكفينه وتجهيزه ودفنه</li>
-                        <li>قضاء ديونه من جميع ما بقي</li>
-                        <li>تنفيذ وصاياه من ثلث ما بقي</li>
-                        <li>تقسيم الباقي بين ورثته</li>
-                    </ol>
-                </div>
-            </div>
-            
-            <div id="shares" class="content-section">
-                <h2>📐 السهام المقدرة في كتاب الله</h2>
-                
-                <div class="highlight">
-                    <h3>السهام الستة</h3>
-                    <ol>
-                        <li>النصف (١/٢)</li>
-                        <li>الربع (١/٤)</li>
-                        <li>الثمن (١/٨)</li>
-                        <li>الثلثان (٢/٣)</li>
-                        <li>الثلث (١/٣)</li>
-                        <li>السدس (١/٦)</li>
-                    </ol>
-                </div>
-                
-                <h2>👥 المستحقون لهذه السهام</h2>
-                
-                <div class="card">
-                    <h3>أربعة من الرجال:</h3>
-                    <ul>
-                        <li>الأب</li>
-                        <li>الجد الصحيح (أب الأب) وإن علا</li>
-                        <li>الأخ لأم</li>
-                        <li>الزوج</li>
-                    </ul>
-                </div>
-                
-                <div class="card">
-                    <h3>ثمان من النساء:</h3>
-                    <ul>
-                        <li>الزوجة</li>
-                        <li>البنت</li>
-                        <li>بنت الابن وإن سفلت</li>
-                        <li>الأخت لأب وأم</li>
-                        <li>الأخت لأب فقط</li>
-                        <li>الأخت لأم فقط</li>
-                        <li>الأم</li>
-                        <li>الجدة الصحيحة</li>
-                    </ul>
-                </div>
-                
-                <div class="verse">
-                    <strong>تعريف الجدة الصحيحة:</strong> التي لا يدخل في نسبتها إلى الميت جد فاسد (كأم الأم وأم الأب)
-                </div>
-                
-                <div class="verse">
-                    <strong>تعريف الجد الصحيح:</strong> الذي لا تكون في نسبته إلى الميت أم (كأب الأب)
-                </div>
-            </div>
-            
-            <div id="heirs" class="content-section">
-                <h2>👨‍👩‍👧‍👦 أحوال الورثة التفصيلية</h2>
-                
-                <div class="card">
-                    <h3>١. أحوال الأب (ثلاث أحوال)</h3>
-                    <ol>
-                        <li><strong>الفرض المطلق (السدس):</strong> مع ابن الميت أو ابن ابنه</li>
-                        <li><strong>الفرض والتعصيب معاً:</strong> مع بنت الميت أو بنت ابنه</li>
-                        <li><strong>التعصيب المحض:</strong> عند عدم الولد وولد الابن</li>
-                    </ol>
-                </div>
-                
-                <div class="card">
-                    <h3>٢. أحوال الجد الصحيح (أربع أحوال)</h3>
-                    <p>كالأب في الأحوال الثلاث، بالإضافة إلى:</p>
-                    <ul>
-                        <li>سقوطه بالأب</li>
-                    </ul>
-                    <p><strong>الفروق بين الأب والجد:</strong></p>
-                    <ol>
-                        <li>أم الأب لا ترث مع الأب، وترث مع الجد</li>
-                        <li>للأم ثلث ما بقي مع الأب والزوج، وثلث جميع المال مع الجد</li>
-                        <li>الإخوة يسقطون مع الأب، ولا يسقطون مع الجد (إلا عند أبي حنيفة)</li>
-                        <li>أبو المعتق مع ابنه يأخذ سدس الولاء، والجد لا شيء له</li>
-                    </ol>
-                </div>
-                
-                <div class="card">
-                    <h3>٣. أحوال الإخوة لأم (ثلاث أحوال)</h3>
-                    <ol>
-                        <li><strong>السدس:</strong> للواحد</li>
-                        <li><strong>الثلث:</strong> للاثنين فصاعداً (ذكورهم وإناثهم سواء)</li>
-                        <li><strong>السقوط:</strong> بالولد، ولد الابن، الأب، والجد</li>
-                    </ol>
-                </div>
-                
-                <div class="card">
-                    <h3>٤. أحوال الزوج (حالتان)</h3>
-                    <ol>
-                        <li><strong>النصف:</strong> عند عدم الولد وولد الابن</li>
-                        <li><strong>الربع:</strong> مع الولد أو ولد الابن</li>
-                    </ol>
-                </div>
-                
-                <div class="card">
-                    <h3>٥. أحوال الزوجة (حالتان)</h3>
-                    <ol>
-                        <li><strong>الربع:</strong> للواحدة فصاعداً إذا لم يكن للزوج ولد</li>
-                        <li><strong>الثمن:</strong> مع الولد أو ولد الابن</li>
-                    </ol>
-                </div>
-                
-                <div class="card">
-                    <h3>٦. أحوال البنات الصلبية (ثلاث أحوال)</h3>
-                    <ol>
-                        <li><strong>النصف:</strong> للواحدة</li>
-                        <li><strong>الثلثان:</strong> للاثنتين فصاعداً</li>
-                        <li><strong>التعصيب:</strong> مع الابن للذكر مثل حظ الأنثيين</li>
-                    </ol>
-                </div>
-                
-                <div class="card">
-                    <h3>٧. أحوال بنات الابن (ست أحوال)</h3>
-                    <ol>
-                        <li><strong>النصف:</strong> للواحدة عند عدم بنات الصلب</li>
-                        <li><strong>الثلثان:</strong> للاثنتين فصاعداً</li>
-                        <li><strong>السدس:</strong> مع الواحدة الصلبية تكملة للثلثين</li>
-                        <li><strong>لا يرثن:</strong> مع الصلبتين</li>
-                        <li><strong>التعصيب:</strong> إلا أن يكون غلام بحذاءهن أو أسفل منهن</li>
-                        <li><strong>السقوط:</strong> بالابن</li>
-                    </ol>
-                </div>
-                
-                <div class="card">
-                    <h3>٨. أحوال الأخوات لأب وأم (خمس أحوال)</h3>
-                    <ol>
-                        <li><strong>النصف:</strong> للواحدة</li>
-                        <li><strong>الثلثان:</strong> للاثنتين فصاعداً</li>
-                        <li><strong>التعصيب:</strong> مع الأخ لأب وأم للذكر مثل حظ الأنثيين</li>
-                        <li><strong>التعصيب مع البنات:</strong> مع البنات أو بنات الابن</li>
-                        <li><strong>السقوط:</strong> بابن الميت، ابن الابن، الأب، والجد</li>
-                    </ol>
-                </div>
-                
-                <div class="card">
-                    <h3>٩. أحوال الأخوات لأب (سبع أحوال)</h3>
-                    <ol>
-                        <li><strong>النصف:</strong> للواحدة</li>
-                        <li><strong>الثلثان:</strong> للاثنتين فصاعداً عند عدم الأخوات لأب وأم</li>
-                        <li><strong>السدس:</strong> مع الأخت لأب وأم تكملة للثلثين</li>
-                        <li><strong>لا يرثن:</strong> مع الأختين لأب وأم</li>
-                        <li><strong>التعصيب:</strong> بالأخ لأب</li>
-                        <li><strong>التعصيب مع البنات:</strong> مع البنات أو بنات الابن</li>
-                        <li><strong>السقوط:</strong> بالابن، ابن الابن، الأب، الجد، والأخ لأب وأم</li>
-                    </ol>
-                </div>
-                
-                <div class="card">
-                    <h3>١٠. أحوال الأم (ثلاث أحوال)</h3>
-                    <ol>
-                        <li><strong>السدس:</strong> مع الولد أو ولد الابن، أو مع اثنين من الإخوة والأخوات فصاعداً</li>
-                        <li><strong>ثلث كل المال:</strong> عند عدم المذكورين</li>
-                        <li><strong>ثلث الباقي:</strong> بعد سهم أحد الزوجين (في مسألتي الغراويين)</li>
-                    </ol>
-                </div>
-                
-                <div class="card">
-                    <h3>١١. أحوال الجدة (حالتان)</h3>
-                    <ol>
-                        <li><strong>السدس:</strong> واحدة كانت أو أكثر (للمتحاذيات في الدرجة)</li>
-                        <li><strong>السقوط:</strong> كلهن بالأم، والأبويات بالأب والجد (إلا أم الأب)</li>
-                    </ol>
-                    <p><strong>ملاحظة:</strong> الجدة القريبة تحجب البعيدة من أي جهة كانت</p>
-                </div>
-            </div>
-            
-            <div id="asaba" class="content-section">
-                <h2>🔷 العصبة وأقسامها</h2>
-                
-                <div class="highlight">
-                    <h3>تعريف العصبة</h3>
-                    <p><strong>لغة:</strong> قرابة الرجل من جانب أبيه</p>
-                    <p><strong>اصطلاحاً:</strong> من ليس له سهم مقدّر، بل يستحق ما بقي من أصحاب الفرائض عند وجودهم، ويحرز جميع المال عند عدمهم</p>
-                </div>
-                
-                <h2>أقسام العصبة النسبية (ثلاثة)</h2>
-                
-                <div class="card">
-                    <h3>١. العصبة بنفسه</h3>
-                    <p>كل ذكر لا تدخل في نسبته إلى الميت أنثى</p>
-                    <h4>الأصناف الأربعة (بالترتيب):</h4>
-                    <ol>
-                        <li><strong>جزء الميت:</strong> الابن، ابن الابن وإن سفل</li>
-                        <li><strong>أصله:</strong> الأب، الجد وإن علا</li>
-                        <li><strong>جزء أبيه:</strong> الأخ، ابن الأخ وإن سفل</li>
-                        <li><strong>جزء جده:</strong> العم، ابن العم وإن سفل</li>
-                    </ol>
-                    <div class="highlight">
-                        <p><strong>الترجيح:</strong></p>
-                        <ol>
-                            <li>بقرب الدرجة (الأقرب يحجب الأبعد)</li>
-                            <li>بقوة القرابة (ذو القرابتين أولى من ذي قرابة واحدة)</li>
-                        </ol>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3>٢. العصبة بغيره</h3>
-                    <p>كل أنثى صاحبة فرض صارت عصبة بأخيها</p>
-                    <h4>الأربع من النسوة:</h4>
-                    <ul>
-                        <li>البنت (تصير عصبة بالابن)</li>
-                        <li>بنت الابن (تصير عصبة بابن الابن)</li>
-                        <li>الأخت لأب وأم (تصير عصبة بالأخ لأب وأم)</li>
-                        <li>الأخت لأب (تصير عصبة بالأخ لأب)</li>
-                    </ul>
-                    <p><strong>شرط:</strong> أن تكون الأنثى ذات فرض. من لا فرض لها (كالعمة) لا تصير عصبة بأخيها</p>
-                </div>
-                
-                <div class="card">
-                    <h3>٣. العصبة مع غيره</h3>
-                    <p>كل أنثى تصير عصبة مع أنثى أخرى</p>
-                    <p><strong>مثال:</strong> الأخت لأب وأم، أو لأب فقط مع البنت أو بنت الابن</p>
-                    <div class="verse">
-                        «اجعلوا الأخوات مع البنات عصبة»
-                    </div>
-                </div>
-                
-                <h2>🔸 العصبة السببية</h2>
-                
-                <div class="card">
-                    <h3>مولى العتاقة (المعتق)</h3>
-                    <p>ثم عصبته على الترتيب: ابنه، ابن ابنه، أبوه، جده، جزء أبيه، جزء جده</p>
-                    <div class="verse">
-                        «الولاء لحمة كلحمة النسب، لا يباع ولا يوهب»
-                    </div>
-                    <div class="highlight">
-                        <p><strong>ملاحظة مهمة:</strong> لا شيء للإناث من ورثة المعتق</p>
-                        <p>«ليس للنساء من الولاء إلا ما أعتقن أو أعتقه من أعتقن...»</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="hajb" class="content-section">
-                <h2>🚫 الحجب وأقسامه</h2>
-                
-                <div class="highlight">
-                    <h3>تعريف الحجب</h3>
-                    <p><strong>لغة:</strong> المنع</p>
-                    <p><strong>اصطلاحاً:</strong> منع الوارث القريب البعيد، أو الأقرب القريب، كلاً أو بعضاً</p>
-                </div>
-                
-                <h2>قسما الحجب</h2>
-                
-                <div class="card">
-                    <h3>١. حجب النقصان</h3>
-                    <p>حجب عن السهم الكثير إلى السهم القليل</p>
-                    <h4>أمثلة:</h4>
-                    <ul>
-                        <li>الزوج: من النصف إلى الربع (مع الولد)</li>
-                        <li>الزوجة: من الربع إلى الثمن (مع الولد)</li>
-                        <li>الأم: من الثلث إلى السدس (مع الولد أو اثنين من الإخوة)</li>
-                        <li>بنت الابن: من النصف أو الثلثين إلى السدس (مع البنت الصلبية)</li>
-                        <li>الأخت لأب: من النصف أو الثلثين إلى السدس (مع الأخت لأب وأم)</li>
-                    </ul>
-                </div>
-                
-                <div class="card">
-                    <h3>٢. حجب الحرمان</h3>
-                    <p>أن لا يكون له حظ في الميراث، لا قليلاً ولا كثيراً</p>
-                    <h4>أسباب الحرمان:</h4>
-                    <ul>
-                        <li>وجود الواسطة بينه وبين الميت (الجد مع الأب)</li>
-                        <li>وجود وارث أقرب منه (ابن الابن مع الابن)</li>
-                    </ul>
-                    <p><strong>استثناء:</strong> إذا كانت الواسطة الأم، فلا تحجب أولادها (لأنها ليست عصبة)</p>
-                </div>
-                
-                <h2>الفرق بين المحجوب والمحروم</h2>
-                
-                <div class="highlight">
-                    <p><strong>المحجوب:</strong> يكون وارثاً، ولكن يمنعه الوارث القريب، فيأخذ الإرث عند عدم المانع</p>
-                    <p><strong>المحروم:</strong> لا يكون وارثاً قط (كالقاتل والكافر والرقيق)</p>
-                    <p><strong>حكم:</strong> المحروم لا يكون حاجباً عندنا، والمحجوب يحجب بالاتفاق</p>
-                </div>
-                
-                <h2>⭐ الأصول الأربعة المهمة</h2>
-                
-                <div class="card">
-                    <h3>١. من لا يُحجبون بحال</h3>
-                    <p>ستة ورثة لا يحجبون حجب حرمان ولا نقصان:</p>
-                    <ul>
-                        <li>الابن</li>
-                        <li>الأب</li>
-                        <li>الزوج</li>
-                        <li>البنت</li>
-                        <li>الأم</li>
-                        <li>الزوجة</li>
-                    </ul>
-                </div>
-                
-                <div class="card">
-                    <h3>٢. باقي الورثة</h3>
-                    <p>قد يرثون وقد يحجبون</p>
-                </div>
-                
-                <div class="card">
-                    <h3>٣. قاعدة الواسطة</h3>
-                    <p>كل من ينسب إلى الميت بواسطة شخص لا يرث مع ذلك الشخص</p>
-                    <p><strong>استثناء:</strong> أولاد الأم يرثون معها (لعدم استحقاقها جميع التركة)</p>
-                </div>
-                
-                <div class="card">
-                    <h3>٤. قاعدة القرب</h3>
-                    <p>عند وجود الأقرب لا شيء للقريب</p>
-                </div>
-                
-                <h2>📝 أنواع الورثة بالترتيب</h2>
-                
-                <div class="card">
-                    <ol>
-                        <li><strong>أصحاب الفرائض:</strong> الذين لهم سهام مقدرة</li>
-                        <li><strong>العصبة النسبية:</strong> من يأخذ ما بقي</li>
-                        <li><strong>العصبة السببية:</strong> المعتق وعصبته</li>
-                        <li><strong>الرد على ذوي الفروض النسبية:</strong> عند عدم العصبة</li>
-                        <li><strong>ذوو الأرحام:</strong> عند الحنفية والحنابلة</li>
-                        <li><strong>مولى الموالاة:</strong> عند عدم الأقسام السابقة</li>
-                        <li><strong>المقر له بالنسب:</strong> بشروط أربعة</li>
-                        <li><strong>الموصى له بجميع المال:</strong> عند عدم من تقدم</li>
-                        <li><strong>بيت المال:</strong> للحفظ عن الضياع</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-        
-        <div class="calculator">
-            <h2 class="calc-title">🧮 حاسبة الميراث</h2>
-            
-            <div class="heir-group">
-                <h4>👨‍👦 الفروع (الأولاد)</h4>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="son" onchange="updateHeirs()">
-                    <label for="son">ابن</label>
-                    <input type="number" id="son_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="daughter" onchange="updateHeirs()">
-                    <label for="daughter">بنت</label>
-                    <input type="number" id="daughter_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="grandson" onchange="updateHeirs()">
-                    <label for="grandson">ابن ابن</label>
-                    <input type="number" id="grandson_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="granddaughter" onchange="updateHeirs()">
-                    <label for="granddaughter">بنت ابن</label>
-                    <input type="number" id="granddaughter_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-            </div>
-            
-            <div class="heir-group">
-                <h4>👨‍👩 الأصول (الآباء والأمهات)</h4>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="father" onchange="updateHeirs()">
-                    <label for="father">أب</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="mother" onchange="updateHeirs()">
-                    <label for="mother">أم</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="grandfather" onchange="updateHeirs()">
-                    <label for="grandfather">جد</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="grandmother" onchange="updateHeirs()">
-                    <label for="grandmother">جدة</label>
-                    <input type="number" id="grandmother_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-            </div>
-            
-            <div class="heir-group">
-                <h4>👫 الإخوة والأخوات</h4>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="full_brother" onchange="updateHeirs()">
-                    <label for="full_brother">أخ شقيق</label>
-                    <input type="number" id="full_brother_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="full_sister" onchange="updateHeirs()">
-                    <label for="full_sister">أخت شقيقة</label>
-                    <input type="number" id="full_sister_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="paternal_brother" onchange="updateHeirs()">
-                    <label for="paternal_brother">أخ لأب</label>
-                    <input type="number" id="paternal_brother_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="paternal_sister" onchange="updateHeirs()">
-                    <label for="paternal_sister">أخت لأب</label>
-                    <input type="number" id="paternal_sister_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="maternal_brother" onchange="updateHeirs()">
-                    <label for="maternal_brother">أخ لأم</label>
-                    <input type="number" id="maternal_brother_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="maternal_sister" onchange="updateHeirs()">
-                    <label for="maternal_sister">أخت لأم</label>
-                    <input type="number" id="maternal_sister_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-            </div>
-            
-            <div class="heir-group">
-                <h4>💑 الزوجية</h4>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="husband" onchange="updateHeirs()">
-                    <label for="husband">زوج</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="wife" onchange="updateHeirs()">
-                    <label for="wife">زوجة</label>
-                    <input type="number" id="wife_count" class="number-input" min="0" value="0" onchange="updateHeirs()">
-                </div>
-            </div>
-            
-            <button class="btn-calculate" onclick="calculateInheritance()">احسب التقسيم</button>
-            <button class="btn-reset" onclick="resetCalculator()">إعادة تعيين</button>
-            
-            <div id="results" class="result-box" style="display: none;">
-                <h3>النتائج</h3>
-                <div id="results-content"></div>
-            </div>
+
+    <div class="header-section text-center">
+        <div class="container">
+            <h1><i class="fas fa-balance-scale"></i> الجامع في علم الفرائض</h1>
+            <p class="lead mt-2">ملخص شامل للتحضير للامتحان + حاسبة المواريث</p>
+            <span class="badge bg-warning text-dark p-2">بناءً على الملف المرفق [faroizz.txt]</span>
         </div>
     </div>
-    
-    <script>
-        function showTab(tabName) {
-            const tabs = document.querySelectorAll('.tab');
-            const sections = document.querySelectorAll('.content-section');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            sections.forEach(section => section.classList.remove('active'));
-            
-            event.target.classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-        }
+
+    <div class="container mb-5">
         
-        function updateHeirs() {
-            // Auto-check checkbox if number is entered
-            const inputs = document.querySelectorAll('.number-input');
-            inputs.forEach(input => {
-                const checkbox = document.getElementById(input.id.replace('_count', ''));
-                if (checkbox && input.value > 0) {
-                    checkbox.checked = true;
-                }
-            });
-        }
-        
-        function calculateInheritance() {
-            const heirs = {};
-            
-            // Collect all heirs
-            if (document.getElementById('son').checked) {
-                heirs.son = parseInt(document.getElementById('son_count').value) || 1;
-            }
-            if (document.getElementById('daughter').checked) {
-                heirs.daughter = parseInt(document.getElementById('daughter_count').value) || 1;
-            }
-            if (document.getElementById('grandson').checked) {
-                heirs.grandson = parseInt(document.getElementById('grandson_count').value) || 1;
-            }
-            if (document.getElementById('granddaughter').checked) {
-                heirs.granddaughter = parseInt(document.getElementById('granddaughter_count').value) || 1;
-            }
-            if (document.getElementById('father').checked) heirs.father = true;
-            if (document.getElementById('mother').checked) heirs.mother = true;
-            if (document.getElementById('grandfather').checked) heirs.grandfather = true;
-            if (document.getElementById('grandmother').checked) {
-                heirs.grandmother = parseInt(document.getElementById('grandmother_count').value) || 1;
-            }
-            if (document.getElementById('full_brother').checked) {
-                heirs.full_brother = parseInt(document.getElementById('full_brother_count').value) || 1;
-            }
-            if (document.getElementById('full_sister').checked) {
-                heirs.full_sister = parseInt(document.getElementById('full_sister_count').value) || 1;
-            }
-            if (document.getElementById('paternal_brother').checked) {
-                heirs.paternal_brother = parseInt(document.getElementById('paternal_brother_count').value) || 1;
-            }
-            if (document.getElementById('paternal_sister').checked) {
-                heirs.paternal_sister = parseInt(document.getElementById('paternal_sister_count').value) || 1;
-            }
-            if (document.getElementById('maternal_brother').checked) {
-                heirs.maternal_brother = parseInt(document.getElementById('maternal_brother_count').value) || 1;
-            }
-            if (document.getElementById('maternal_sister').checked) {
-                heirs.maternal_sister = parseInt(document.getElementById('maternal_sister_count').value) || 1;
-            }
-            if (document.getElementById('husband').checked) heirs.husband = true;
-            if (document.getElementById('wife').checked) {
-                heirs.wife = parseInt(document.getElementById('wife_count').value) || 1;
-            }
-            
-            const results = computeShares(heirs);
-            displayResults(results);
-        }
-        
-        function computeShares(heirs) {
-            const shares = {};
-            let base = 1;
-            
-            // Check for children (blocking factor)
-            const hasChild = heirs.son || heirs.daughter || heirs.grandson || heirs.granddaughter;
-            
-            // Husband's share
-            if (heirs.husband) {
-                shares['الزوج'] = hasChild ? '١/٤ (الربع)' : '١/٢ (النصف)';
-            }
-            
-            // Wife's share
-            if (heirs.wife) {
-                const wifeShare = hasChild ? '١/٨ (الثمن)' : '١/٤ (الربع)';
-                shares['الزوجة' + (heirs.wife > 1 ? ' (' + heirs.wife + ')' : '')] = wifeShare + (heirs.wife > 1 ? ' يقسم بينهن' : '');
-            }
-            
-            // Father's share
-            if (heirs.father) {
-                if (heirs.son || heirs.grandson) {
-                    shares['الأب'] = '١/٦ (السدس) فرضاً';
-                } else if (heirs.daughter || heirs.granddaughter) {
-                    shares['الأب'] = '١/٦ (السدس) فرضاً + الباقي تعصيباً';
-                } else {
-                    shares['الأب'] = 'الباقي كله تعصيباً';
-                }
-            }
-            
-            // Mother's share
-            if (heirs.mother) {
-                const siblingsCount = (heirs.full_brother || 0) + (heirs.full_sister || 0) + 
-                                     (heirs.paternal_brother || 0) + (heirs.paternal_sister || 0) +
-                                     (heirs.maternal_brother || 0) + (heirs.maternal_sister || 0);
-                
-                if (hasChild || siblingsCount >= 2) {
-                    shares['الأم'] = '١/٦ (السدس)';
-                } else {
-                    shares['الأم'] = '١/٣ (الثلث)';
-                }
-            }
-            
-            // Grandmother's share
-            if (heirs.grandmother && !heirs.mother) {
-                shares['الجدة' + (heirs.grandmother > 1 ? ' (' + heirs.grandmother + ')' : '')] = '١/٦ (السدس)' + (heirs.grandmother > 1 ? ' يقسم بينهن' : '');
-            } else if (heirs.grandmother && heirs.mother) {
-                shares['الجدة'] = 'محجوبة بالأم';
-            }
-            
-            // Grandfather's share
-            if (heirs.grandfather) {
-                if (heirs.father) {
-                    shares['الجد'] = 'محجوب بالأب';
-                } else {
-                    shares['الجد'] = 'كالأب في الأحكام';
-                }
-            }
-            
-            // Son and daughter shares
-            if (heirs.son && heirs.daughter) {
-                shares['الابن (' + heirs.son + ')'] = 'للذكر مثل حظ الأنثيين (تعصيب)';
-                shares['البنت (' + heirs.daughter + ')'] = 'للذكر مثل حظ الأنثيين (تعصيب)';
-            } else if (heirs.son) {
-                shares['الابن' + (heirs.son > 1 ? ' (' + heirs.son + ')' : '')] = 'الباقي تعصيباً' + (heirs.son > 1 ? ' يقسم بينهم بالسوية' : '');
-            } else if (heirs.daughter) {
-                if (heirs.daughter === 1) {
-                    shares['البنت'] = '١/٢ (النصف)';
-                } else {
-                    shares['البنات (' + heirs.daughter + ')'] = '٢/٣ (الثلثان) يقسم بينهن بالسوية';
-                }
-            }
-            
-            // Grandson shares (if no son)
-            if (!heirs.son && heirs.grandson) {
-                if (heirs.granddaughter) {
-                    shares['ابن الابن (' + heirs.grandson + ')'] = 'للذكر مثل حظ الأنثيين (تعصيب)';
-                    shares['بنت الابن (' + heirs.granddaughter + ')'] = 'للذكر مثل حظ الأنثيين (تعصيب)';
-                } else {
-                    shares['ابن الابن' + (heirs.grandson > 1 ? ' (' + heirs.grandson + ')' : '')] = 'الباقي تعصيباً';
-                }
-            } else if (heirs.grandson && heirs.son) {
-                shares['ابن الابن'] = 'محجوب بالابن';
-            }
-            
-            // Granddaughter shares
-            if (!heirs.son && heirs.granddaughter) {
-                if (heirs.daughter === 1 && !heirs.grandson) {
-                    shares['بنت الابن' + (heirs.granddaughter > 1 ? ' (' + heirs.granddaughter + ')' : '')] = '١/٦ (السدس) تكملة للثلثين';
-                } else if (heirs.daughter >= 2) {
-                    shares['بنت الابن'] = 'محجوبة بالبنتين';
-                } else if (!heirs.daughter && !heirs.grandson) {
-                    if (heirs.granddaughter === 1) {
-                        shares['بنت الابن'] = '١/٢ (النصف)';
-                    } else {
-                        shares['بنات الابن (' + heirs.granddaughter + ')'] = '٢/٣ (الثلثان)';
-                    }
-                }
-            } else if (heirs.granddaughter && heirs.son) {
-                shares['بنت الابن'] = 'محجوبة بالابن';
-            }
-            
-            // Full siblings
-            if (heirs.full_brother || heirs.full_sister) {
-                if (hasChild || heirs.father) {
-                    shares['الإخوة الأشقاء'] = 'محجوبون';
-                } else if ((heirs.daughter || heirs.granddaughter) && heirs.full_sister && !heirs.full_brother) {
-                    shares['الأخت الشقيقة' + (heirs.full_sister > 1 ? ' (' + heirs.full_sister + ')' : '')] = 'عصبة مع البنات';
-                } else if (heirs.full_brother && heirs.full_sister) {
-                    shares['الأخ الشقيق (' + heirs.full_brother + ')'] = 'للذكر مثل حظ الأنثيين';
-                    shares['الأخت الشقيقة (' + heirs.full_sister + ')'] = 'للذكر مثل حظ الأنثيين';
-                } else if (heirs.full_brother) {
-                    shares['الأخ الشقيق' + (heirs.full_brother > 1 ? ' (' + heirs.full_brother + ')' : '')] = 'الباقي تعصيباً';
-                } else if (heirs.full_sister) {
-                    if (heirs.full_sister === 1) {
-                        shares['الأخت الشقيقة'] = '١/٢ (النصف)';
-                    } else {
-                        shares['الأخوات الشقيقات (' + heirs.full_sister + ')'] = '٢/٣ (الثلثان)';
-                    }
-                }
-            }
-            
-            // Paternal siblings
-            if (heirs.paternal_brother || heirs.paternal_sister) {
-                if (hasChild || heirs.father || heirs.full_brother || (heirs.full_sister && (heirs.daughter || heirs.granddaughter))) {
-                    shares['الإخوة لأب'] = 'محجوبون';
-                } else if ((heirs.daughter || heirs.granddaughter) && heirs.paternal_sister && !heirs.paternal_brother) {
-                    shares['الأخت لأب' + (heirs.paternal_sister > 1 ? ' (' + heirs.paternal_sister + ')' : '')] = 'عصبة مع البنات';
-                } else {
-                    // Similar logic to full siblings
-                    if (heirs.paternal_brother && heirs.paternal_sister) {
-                        shares['الأخ لأب (' + heirs.paternal_brother + ')'] = 'للذكر مثل حظ الأنثيين';
-                        shares['الأخت لأب (' + heirs.paternal_sister + ')'] = 'للذكر مثل حظ الأنثيين';
-                    } else if (heirs.paternal_brother) {
-                        shares['الأخ لأب' + (heirs.paternal_brother > 1 ? ' (' + heirs.paternal_brother + ')' : '')] = 'الباقي تعصيباً';
-                    } else if (heirs.paternal_sister) {
-                        if (heirs.full_sister === 1) {
-                            shares['الأخت لأب'] = '١/٦ (السدس) تكملة للثلثين';
-                        } else if (heirs.full_sister >= 2) {
-                            shares['الأخت لأب'] = 'محجوبة';
-                        } else if (heirs.paternal_sister === 1) {
-                            shares['الأخت لأب'] = '١/٢ (النصف)';
-                        } else {
-                            shares['الأخوات لأب (' + heirs.paternal_sister + ')'] = '٢/٣ (الثلثان)';
-                        }
-                    }
-                }
-            }
-            
-            // Maternal siblings
-            if (heirs.maternal_brother || heirs.maternal_sister) {
-                const maternalCount = (heirs.maternal_brother || 0) + (heirs.maternal_sister || 0);
-                if (hasChild || heirs.father || heirs.grandfather) {
-                    shares['الإخوة لأم'] = 'محجوبون';
-                } else {
-                    if (maternalCount === 1) {
-                        const label = heirs.maternal_brother ? 'الأخ لأم' : 'الأخت لأم';
-                        shares[label] = '١/٦ (السدس)';
-                    } else {
-                        shares['الإخوة لأم (' + maternalCount + ')'] = '١/٣ (الثلث) يقسم بينهم بالسوية';
-                    }
-                }
-            }
-            
-            return shares;
-        }
-        
-        function displayResults(shares) {
-            const resultsDiv = document.getElementById('results');
-            const contentDiv = document.getElementById('results-content');
-            
-            if (Object.keys(shares).length === 0) {
-                contentDiv.innerHTML = '<p>الرجاء اختيار الورثة</p>';
-                resultsDiv.style.display = 'block';
-                return;
-            }
-            
-            let html = '';
-            for (const [heir, share] of Object.entries(shares)) {
-                html += `
-                    <div class="result-item">
-                        <span>${heir}</span>
-                        <span>${share}</span>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-custom h-100">
+                    <div class="card-header-custom"><i class="fas fa-book-open ms-2"></i> تعريفات أساسية</div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            [cite_start]<li class="mb-3"><strong>الميراث لغة:</strong> البقاء وانتقال الشيء من شخص لآخر[cite: 187].</li>
+                            [cite_start]<li class="mb-3"><strong>اصطلاحاً:</strong> انتقال ملك أحد بسبب الموت إلى ورثته الشرعية[cite: 189].</li>
+                            [cite_start]<li class="mb-3"><strong>الفرائض:</strong> جمع فريضة (مقدرة)، وهو العلم بالسهام المقدرة ومستحقيها[cite: 194].</li>
+                            [cite_start]<li><strong>التركة:</strong> ما يتركه الميت من أموال وحقوق[cite: 190].</li>
+                        </ul>
                     </div>
-                `;
-            }
-            
-            contentDiv.innerHTML = html;
-            resultsDiv.style.display = 'block';
-        }
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-custom h-100">
+                    <div class="card-header-custom"><i class="fas fa-columns ms-2"></i> الأركان والشروط</div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-4 border-start">
+                                <h5 class="text-success">الأركان</h5>
+                                [cite_start]<small>المورث، الوارث، الموروث [cite: 223]</small>
+                            </div>
+                            <div class="col-4 border-start">
+                                <h5 class="text-success">الأسباب</h5>
+                                [cite_start]<small>الزوجية، القرابة، الولاء [cite: 224]</small>
+                            </div>
+                            <div class="col-4">
+                                <h5 class="text-success">الشروط</h5>
+                                [cite_start]<small>موت المورث، حياة الوارث، انتفاء الموانع [cite: 227]</small>
+                            </div>
+                        </div>
+                        <div class="alert alert-danger mt-3 mb-0 p-2">
+                            [cite_start]<strong>موانع الإرث:</strong> الرق، القتل، اختلاف الدين، اختلاف الدارين[cite: 250].
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-custom">
+            [cite_start]<div class="card-header-custom"><i class="fas fa-list-ol ms-2"></i> الحقوق المتعلقة بالتركة (بالترتيب) [cite: 230]</div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between text-center d-none d-md-flex">
+                    <div class="flex-fill p-2 border-end">1. التجهيز والكفن</div>
+                    <div class="flex-fill p-2 border-end">2. قضاء الديون</div>
+                    <div class="flex-fill p-2 border-end">3. تنفيذ الوصايا (من الثلث)</div>
+                    <div class="flex-fill p-2">4. تقسيم الإرث</div>
+                </div>
+                <ul class="d-md-none">
+                    <li>التجهيز والكفن</li>
+                    <li>قضاء الديون</li>
+                    <li>تنفيذ الوصايا</li>
+                    <li>تقسيم الإرث</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3 class="mt-5 mb-4 text-center section-title">أصحاب الفروض والسهام المقدرة</h3>
+        [cite_start]<p class="text-center text-muted">السهام في كتاب الله ستة: النصف، الربع، الثمن، الثلثان، الثلث، السدس [cite: 260]</p>
         
-        function resetCalculator() {
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card card-custom h-100">
+                    <div class="card-body text-center">
+                        <div class="share-badge">النصف (1/2)</div>
+                        <ul class="list-group list-group-flush text-start">
+                            [cite_start]<li class="list-group-item"><strong>الزوج:</strong> عند عدم الفرع الوارث[cite: 281].</li>
+                            [cite_start]<li class="list-group-item"><strong>البنت:</strong> الواحدة المنفردة[cite: 288].</li>
+                            [cite_start]<li class="list-group-item"><strong>بنت الابن:</strong> الواحدة عند عدم البنت[cite: 289].</li>
+                            [cite_start]<li class="list-group-item"><strong>الأخت ش:</strong> الواحدة المنفردة[cite: 295].</li>
+                            [cite_start]<li class="list-group-item"><strong>الأخت لأب:</strong> الواحدة المنفردة[cite: 299].</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-custom h-100">
+                    <div class="card-body text-center">
+                        <div class="share-badge">الربع (1/4) والثمن (1/8)</div>
+                        <ul class="list-group list-group-flush text-start">
+                            [cite_start]<li class="list-group-item"><strong>الربع للزوج:</strong> مع وجود الفرع الوارث[cite: 282].</li>
+                            [cite_start]<li class="list-group-item"><strong>الربع للزوجة:</strong> عند عدم الفرع الوارث[cite: 285].</li>
+                            [cite_start]<li class="list-group-item bg-light"><strong>الثمن للزوجة:</strong> مع وجود الفرع الوارث[cite: 286].</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-custom h-100">
+                    <div class="card-body text-center">
+                        <div class="share-badge">الثلثان (2/3)</div>
+                        <div class="text-muted small mb-2">للاثنتين فصاعداً من النساء</div>
+                        <ul class="list-group list-group-flush text-start">
+                            [cite_start]<li class="list-group-item">البنات الصلبيات[cite: 289].</li>
+                            [cite_start]<li class="list-group-item">بنات الابن (عند عدم البنات)[cite: 289].</li>
+                            [cite_start]<li class="list-group-item">الأخوات الشقيقات[cite: 296].</li>
+                            [cite_start]<li class="list-group-item">الأخوات لأب[cite: 300].</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+             <div class="col-md-12">
+                <div class="card card-custom">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 border-end">
+                                <h5 class="text-center text-primary">الثلث (1/3)</h5>
+                                <ul>
+                                    [cite_start]<li><strong>الأم:</strong> عند عدم الفرع الوارث وعدم الجمع من الإخوة[cite: 312].</li>
+                                    [cite_start]<li><strong>أولاد الأم (الإخوة لأم):</strong> للاثنين فصاعداً (بالتساوي)[cite: 279].</li>
+                                    [cite_start]<li><strong>الأم (ثلث الباقي):</strong> في المسألتين العمريتين (مع أحد الزوجين والأب)[cite: 313].</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-center text-primary">السدس (1/6)</h5>
+                                <p class="small text-center">أكثر الفروض شيوعاً</p>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <ul>
+                                            [cite_start]<li><strong>الأب:</strong> مع الفرع الذكر[cite: 269].</li>
+                                            [cite_start]<li><strong>الأم:</strong> مع الفرع الوارث أو جمع الإخوة[cite: 308].</li>
+                                            [cite_start]<li><strong>الجد:</strong> مثل الأب عند عدمه[cite: 272].</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-6">
+                                        <ul>
+                                            [cite_start]<li><strong>الجدة:</strong> الواحدة أو أكثر[cite: 316].</li>
+                                            [cite_start]<li><strong>بنت الابن:</strong> تكملة الثلثين مع البنت[cite: 289].</li>
+                                            [cite_start]<li><strong>الأخت لأب:</strong> تكملة الثلثين مع الشقيقة[cite: 301].</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-custom mt-4 border-warning">
+            <div class="card-header-custom bg-warning bg-opacity-10 text-dark">
+                <i class="fas fa-ban ms-2"></i> الحجب (قواعد ذهبية للامتحان)
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="highlight-box">
+                            <strong>الورثة الذين لا يسقطون أبداً (6):</strong>
+                            [cite_start]<br>الابن، البنت، الأب، الأم، الزوج، الزوجة[cite: 363].
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="highlight-box">
+                            <strong>قاعدة الحجب:</strong>
+                            [cite_start]<br>كل من أدلى إلى الميت بواسطة حجبته تلك الواسطة (إلا أولاد الأم يرثون مع الأم)[cite: 364].
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-sm mt-3">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>النوع</th>
+                            <th>التعريف</th>
+                            <th>مثال</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>حجب حرمان</td>
+                            [cite_start]<td>المنع من الميراث بالكلية [cite: 357]</td>
+                            <td>الجد يحجب بالأب، ابن الابن يحجب بالابن.</td>
+                        </tr>
+                        <tr>
+                            <td>حجب نقصان</td>
+                            [cite_start]<td>الانتقال من سهم أكبر لأصغر [cite: 356]</td>
+                            <td>الزوج من 1/2 إلى 1/4 بسبب الولد.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="calc-section mt-5" id="calculator">
+            <h2 class="text-center mb-4"><i class="fas fa-calculator text-success"></i> حاسبة الميراث المبسطة</h2>
+            <p class="text-center text-muted">حساب لأصحاب الفروض الأساسيين الذين لا يسقطون (الستة) بناءً على قواعد الملف.</p>
+            
+            <div class="row">
+                <div class="col-lg-5 order-lg-2">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">قيمة التركة (المال):</label>
+                        <input type="number" id="estateValue" class="form-control" placeholder="أدخل المبلغ هنا (مثلاً 12000)">
+                    </div>
+
+                    <h5 class="mt-4 mb-3 border-bottom pb-2">اختر الورثة الموجودين:</h5>
+                    
+                    <div class="mb-3 p-2 border rounded bg-light">
+                        <label class="fw-bold d-block mb-2">نوع الميت:</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="deceasedGender" id="genderMale" value="male" checked onclick="toggleSpouse()">
+                            <label class="form-check-label" for="genderMale">رجل (يوجد زوجة)</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="deceasedGender" id="genderFemale" value="female" onclick="toggleSpouse()">
+                            <label class="form-check-label" for="genderFemale">امرأة (يوجد زوج)</label>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-wrapper" id="spouseDiv">
+                        <input type="checkbox" id="hasSpouse">
+                        <label for="hasSpouse" id="spouseLabel">الزوجة</label>
+                    </div>
+
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="hasFather">
+                        <label for="hasFather">الأب</label>
+                    </div>
+
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="hasMother">
+                        <label for="hasMother">الأم</label>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="hasSon">
+                                <label for="hasSon">الابن (وإن تعدد)</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="hasDaughter">
+                                <label for="hasDaughter">البنت (وإن تعددت)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="small text-muted">* هذه الحاسبة تفترض وجود فرد واحد لكل صنف لغرض التوضيح، وتعدد الأبناء/البنات يتم بجمعهم في خانة الباقي.</label>
+                    </div>
+
+                    <button class="btn btn-success w-100 mt-4 py-2 fw-bold" onclick="calculateInheritance()">
+                        <i class="fas fa-coins ms-1"></i> احسب القسمة
+                    </button>
+                </div>
+
+                <div class="col-lg-7 order-lg-1 mt-4 mt-lg-0">
+                    <div class="card h-100 border-success">
+                        <div class="card-header bg-success text-white text-center">
+                            النتيجة التفصيلية
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-hover result-table text-center align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>الوارث</th>
+                                        <th>الفرض/الحالة</th>
+                                        <th>السهم (القيمة)</th>
+                                        <th>الدليل/التعليل</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultBody">
+                                    <tr>
+                                        <td colspan="4" class="text-muted py-5">أدخل البيانات واضغط "احسب"</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="totalCheck" class="text-end fw-bold mt-2 text-primary"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleSpouse() {
+            const isMale = document.getElementById('genderMale').checked;
+            const spouseLabel = document.getElementById('spouseLabel');
+            spouseLabel.textContent = isMale ? "الزوجة" : "الزوج";
+        }
+
+        function calculateInheritance() {
+            // 1. Get Inputs
+            let estate = parseFloat(document.getElementById('estateValue').value) || 0;
+            const isMale = document.getElementById('genderMale').checked;
+            const hasSpouse = document.getElementById('hasSpouse').checked;
+            const hasFather = document.getElementById('hasFather').checked;
+            const hasMother = document.getElementById('hasMother').checked;
+            const hasSon = document.getElementById('hasSon').checked;
+            const hasDaughter = document.getElementById('hasDaughter').checked;
+
+            let resultHTML = "";
+            let remainingEstate = estate;
+            
+            // Determine Branch (Far' Warith)
+            const hasBranch = hasSon || hasDaughter;
+            const hasMaleBranch = hasSon;
+
+            // --- 1. Spouse Share ---
+            if (hasSpouse) {
+                let shareFraction = 0;
+                let shareText = "";
+                let reason = "";
+
+                if (isMale) { // Wife
+                    if (hasBranch) {
+                        shareFraction = 1/8;
+                        shareText = "1/8 (الثمن)";
+                        [cite_start]reason = "لوجود الفرع الوارث [cite: 286]";
+                    } else {
+                        shareFraction = 1/4;
+                        shareText = "1/4 (الربع)";
+                        [cite_start]reason = "لعدم وجود الفرع الوارث [cite: 285]";
+                    }
+                } else { // Husband
+                    if (hasBranch) {
+                        shareFraction = 1/4;
+                        shareText = "1/4 (الربع)";
+                        [cite_start]reason = "لوجود الفرع الوارث [cite: 282]";
+                    } else {
+                        shareFraction = 1/2;
+                        shareText = "1/2 (النصف)";
+                        [cite_start]reason = "لعدم وجود الفرع الوارث [cite: 281]";
+                    }
+                }
+                
+                let val = estate * shareFraction;
+                remainingEstate -= val;
+                
+                resultHTML += `<tr>
+                    <td>${isMale ? "الزوجة" : "الزوج"}</td>
+                    <td>${shareText}</td>
+                    <td>${val.toFixed(2)}</td>
+                    <td><small>${reason}</small></td>
+                </tr>`;
+            }
+
+            // --- 2. Parents Share ---
+            
+            // Father
+            let fatherShareVal = 0;
+            if (hasFather) {
+                let fShareText = "";
+                let fReason = "";
+                
+                if (hasMaleBranch) {
+                    // With Son: Fixed 1/6
+                    let val = estate * (1/6);
+                    fatherShareVal = val; // Store to deduct later
+                    fShareText = "1/6 (السدس)";
+                    [cite_start]fReason = "لوجود الفرع الذكر [cite: 269]";
+                } else if (hasDaughter) {
+                    // With Daughter only: 1/6 + Asabah
+                    let val = estate * (1/6);
+                    fatherShareVal = val; // Plus remainder later
+                    fShareText = "1/6 + الباقي (عصبة)";
+                    [cite_start]fReason = "الفرض والتعصيب معاً [cite: 270]";
+                } else {
+                    // No children: Asabah (Takes remainder)
+                    fShareText = "الباقي (عصبة)";
+                    [cite_start]fReason = "التعصيب المحض [cite: 271]";
+                }
+
+                // If purely fixed share, deduct now
+                if (hasMaleBranch) {
+                    remainingEstate -= fatherShareVal;
+                } else if (hasDaughter) {
+                    remainingEstate -= fatherShareVal; // Takes 1/6 first
+                }
+                
+                // Add row structure (value might be updated for Asabah)
+                resultHTML += `<tr id="fatherRow">
+                    <td>الأب</td>
+                    <td>${fShareText}</td>
+                    <td id="fatherVal">${hasMaleBranch || hasDaughter ? fatherShareVal.toFixed(2) : "..."}</td>
+                    <td><small>${fReason}</small></td>
+                </tr>`;
+            }
+
+            // Mother
+            if (hasMother) {
+                let mShareText = "";
+                let mReason = "";
+                let val = 0;
+
+                // Simplified logic based on text (ignoring siblings count input for simplicity, assuming no siblings if not checked)
+                // Note: Text says Mother gets 1/6 if Child exists OR multiple siblings exist.
+                if (hasBranch) {
+                    val = estate * (1/6);
+                    mShareText = "1/6 (السدس)";
+                    [cite_start]mReason = "لوجود الفرع الوارث [cite: 308]";
+                } else {
+                    // Assuming no siblings for this basic calc
+                    // Omariyyat check: (Spouse + Parents only)
+                    if (hasSpouse && hasFather && !hasBranch) {
+                        // Mother gets 1/3 of Remainder
+                        val = remainingEstate * (1/3);
+                        mShareText = "ثلث الباقي";
+                        [cite_start]mReason = "المسألة العمرية [cite: 313]";
+                    } else {
+                        val = estate * (1/3);
+                        mShareText = "1/3 (الثلث)";
+                        [cite_start]mReason = "لعدم الفرع والجمع من الإخوة [cite: 312]";
+                    }
+                }
+                remainingEstate -= val;
+                resultHTML += `<tr>
+                    <td>الأم</td>
+                    <td>${mShareText}</td>
+                    <td>${val.toFixed(2)}</td>
+                    <td><small>${mReason}</small></td>
+                </tr>`;
+            }
+
+            // --- 3. Distribute Remainder (Asabah) ---
+            
+            // If Father is Asabah (No children or only Daughter)
+            if (hasFather && !hasSon) {
+                // If daughter exists, father already took 1/6, now takes remainder AFTER daughter.
+                // If no daughter, father takes all remainder.
+                // We need to calculate Daughter first.
+            }
+
+            // Children (The Branch)
+            if (hasBranch) {
+                if (hasSon && hasDaughter) {
+                    // Mixed: 2:1 ratio
+                    let remainder = remainingEstate; // Father took 1/6 already if existed
+                    // Check if remaining is enough (should be)
+                    resultHTML += `<tr>
+                        <td>الأولاد (ابن + بنت)</td>
+                        <td>الباقي (عصبة بالغير)</td>
+                        <td>${Math.max(0, remainder).toFixed(2)}</td>
+                        [cite_start]<td><small>للذكر مثل حظ الأنثيين [cite: 331]</small></td>
+                    </tr>`;
+                    remainingEstate = 0;
+                } else if (hasSon) {
+                    // Son only: Asabah
+                    let remainder = remainingEstate;
+                    resultHTML += `<tr>
+                        <td>الابن</td>
+                        <td>الباقي (عصبة بالنفس)</td>
+                        <td>${Math.max(0, remainder).toFixed(2)}</td>
+                        [cite_start]<td><small>يحوز المال أو الباقي [cite: 332]</small></td>
+                    </tr>`;
+                    remainingEstate = 0;
+                } else if (hasDaughter) {
+                    // Daughter only: 1/2
+                    let dVal = estate * (1/2);
+                    // Check logic: If daughter + Father. Father takes 1/6 fixed, Daughter 1/2, Father takes rest.
+                    remainingEstate -= dVal;
+                    resultHTML += `<tr>
+                        <td>البنت</td>
+                        <td>1/2 (النصف)</td>
+                        <td>${dVal.toFixed(2)}</td>
+                        [cite_start]<td><small>للانفراد [cite: 288]</small></td>
+                    </tr>`;
+                }
+            }
+
+            // Father Asabah Update
+            if (hasFather && !hasSon) {
+                // He takes whatever is left now
+                let fatherExtra = Math.max(0, remainingEstate);
+                if (fatherExtra > 0) {
+                     // Need to update the Father Row visually or logically
+                     // Since we appended HTML string, we'll just handle it by appending a note or summing it if I used DOM elements.
+                     // For simplicity in this string builder:
+                     if(hasDaughter) {
+                         // He took 1/6, now adds remainder
+                         let oldVal = parseFloat(fatherShareVal);
+                         let totalF = oldVal + fatherExtra;
+                         // Regex replace to update the specific row in resultHTML string would be messy.
+                         // Let's rebuild the table or use a simple hack:
+                         // Since Daughter row is added AFTER Father row, let's just append a row for "Father's Remainder"
+                         resultHTML += `<tr>
+                            <td>تكملة الأب</td>
+                            <td>+ الباقي</td>
+                            <td>${fatherExtra.toFixed(2)}</td>
+                            <td><small>تعصيباً مع الفرض</small></td>
+                        </tr>`;
+                     } else {
+                         // No kids. He takes ALL remainder.
+                         // Previous Father row had "..." for value.
+                         // We need to replace the placeholder using DOM after rendering, OR simpler:
+                         // Just overwrite the placeholder in the string logic if I structured it differently.
+                         // Let's rely on DOM update after setting innerHTML.
+                     }
+                }
+                remainingEstate = 0;
+            }
+
+            // Render
+            document.getElementById('resultBody').innerHTML = resultHTML;
+
+            // Post-Render fixes for Father Asabah (No Kids)
+            if (hasFather && !hasBranch) {
+                // Father gets all remainder
+                // Re-calculate pure remainder
+                let fVal = estate;
+                if(hasSpouse) fVal -= (isMale ? estate*0.25 : estate*0.5); // Deduct spouse
+                if(hasMother) fVal -= (hasSpouse ? (isMale? (estate-estate*0.25)/3 : (estate-estate*0.5)/3) : estate/3); // Deduct mother (Omariyyah handled above logic roughly, let's trust remainingEstate calculation flow)
+                
+                // Actually remainingEstate variable tracks it correctly.
+                // The father row is currently showing "..." or "Asabah".
+                // Let's update the cell.
+                const fatherCell = document.getElementById('fatherVal');
+                if(fatherCell && fatherCell.innerText === "...") {
+                    // Recalculate what was left for him
+                    // We need to sum up what others took
+                    // But wait, remainingEstate variable holds exactly what's left for him.
+                    // However, we set remainingEstate to 0 inside the hasSon check.
+                    // If !hasBranch, remainingEstate holds the full amount for father.
+                    // But we modified remainingEstate in the Mother/Spouse blocks.
+                    // So remainingEstate is correct.
+                    // We just need to capture the value before we lost scope or just re-calc.
+                    
+                    // Simple approach: Iterate rows and sum, subtract from estate? No.
+                    // Just use the variable from the calculation flow.
+                    // We need to recover the value calculated in the flow.
+                    // Let's run a quick patch:
+                    let used = 0;
+                    // Spouse
+                    if(hasSpouse) used += (isMale ? (hasBranch? estate/8:estate/4) : (hasBranch? estate/4:estate/2));
+                    // Mother
+                    if(hasMother) {
+                         if(hasBranch) used += estate/6;
+                         else if(hasSpouse && hasFather) used += (estate - (isMale ? estate/4 : estate/2))/3;
+                         else used += estate/3;
+                    }
+                    
+                    let fFinal = estate - used;
+                    fatherCell.innerText = fFinal.toFixed(2);
+                }
+            }
+
+            // Final Remainder Check (Rad or Awl not handled in this basic script)
+            if (remainingEstate > 1 && !hasFather && !hasBranch) {
+                 resultHTML += `<tr class="table-warning">
+                    <td>بيت المال / الرد</td>
+                    <td>الباقي</td>
+                    <td>${remainingEstate.toFixed(2)}</td>
+                    [cite_start]<td><small>لم يوجد عصبة [cite: 249]</small></td>
+                </tr>`;
+                document.getElementById('resultBody').innerHTML = resultHTML;
+            }
+        }
+    </script>
+</body>
+</html>
