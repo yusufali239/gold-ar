@@ -3,347 +3,608 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ملخص علم الفرائض - Ilm Al-Faraid Summary</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <title>دليل دراسة علم الميراث والفرائض</title>
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --accent-color: #c0392b; /* Deep Red */
-            --highlight-color: #f1c40f; /* Gold */
-            --bg-light: #f8f9fa;
-        }
-
-        body {
-            font-family: 'Amiri', serif;
-            background-color: var(--bg-light);
-            color: #333;
-            line-height: 1.8;
-        }
-
-        h1, h2, h3, h4 {
-            font-family: 'Tajawal', sans-serif;
-            color: var(--primary-color);
-        }
-
-        .header-section {
-            background: linear-gradient(135deg, #1a2a36 0%, #2c3e50 100%);
-            color: white;
-            padding: 40px 0;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            transition: transform 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-header {
-            background-color: white;
-            border-bottom: 2px solid var(--highlight-color);
-            font-weight: bold;
-            font-size: 1.2rem;
-            font-family: 'Tajawal', sans-serif;
-        }
-
-        .share-badge {
-            font-size: 1.5rem;
-            font-weight: bold;
-            background-color: var(--primary-color);
-            color: var(--highlight-color);
-            padding: 10px 20px;
-            border-radius: 50px;
-            display: inline-block;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .heir-icon {
-            font-size: 2rem;
-            color: var(--accent-color);
-            margin-left: 10px;
-        }
-
-        .pdf-btn {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 30px;
-            font-family: 'Tajawal', sans-serif;
-            transition: all 0.3s;
-        }
-
-        .pdf-btn:hover {
-            background-color: #a93226;
-            color: white;
-            box-shadow: 0 4px 15px rgba(192, 57, 43, 0.4);
-        }
-
-        .mnemonic-box {
-            background-color: #e8f6f3;
-            border-right: 5px solid #1abc9c;
-            padding: 15px;
-            border-radius: 5px;
-        }
-
-        .nav-pills .nav-link.active {
-            background-color: var(--primary-color);
-            color: var(--highlight-color);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        .nav-pills .nav-link {
-            color: var(--primary-color);
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .calculator {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 20px;
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #764ba2;
+            margin: 25px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: #667eea;
+            margin: 20px 0 10px;
+            font-size: 1.4em;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
             font-weight: bold;
         }
-
-        table thead {
-            background-color: var(--primary-color);
+        
+        .tab:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: #f8f9ff;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-right: 5px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-right: 4px solid #ffc107;
+        }
+        
+        .verse {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-right: 4px solid #28a745;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-right: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+            line-height: 1.8;
+        }
+        
+        .calc-title {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #764ba2;
+        }
+        
+        .heir-group {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 8px;
+        }
+        
+        .heir-group h4 {
+            color: #764ba2;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        
+        .checkbox-item:hover {
+            background: #e8e9ff;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 15px;
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .result-box h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .result-item {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .btn-calculate {
+            width: 100%;
+            padding: 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .btn-calculate:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .btn-reset {
+            width: 100%;
+            padding: 12px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn-reset:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .calculator {
+                position: static;
+                max-height: none;
+            }
+        }
+        
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+        
+        .number-input {
+            width: 60px;
+            padding: 5px;
+            margin-right: 10px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-
-    <div class="header-section text-center">
-        <div class="container">
-            <h1><i class="fas fa-balance-scale"></i> ملخص علم الميراث (الفرائض)</h1>
-            <p class="lead">دليلك الشامل والميسر لفهم أحكام التركات والقسمة الشرعية</p>
-            <button onclick="generatePDF()" class="btn pdf-btn mt-3">
-                <i class="fas fa-file-download"></i> تحميل كـ PDF
-            </button>
-        </div>
-    </div>
-
-    <div class="container" id="content-to-print">
-        
-        <section class="mb-5">
-            <h2 class="border-bottom pb-2 mb-4"><i class="fas fa-book-open"></i> ١. مقدمة ومصطلحات أساسية</h2>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header">تعريف علم الميراث</div>
-                        <div class="card-body">
-                            <p><strong>لغة:</strong> البقاء وانتقال الشيء من شخص لآخر.</p>
-                            [cite_start]<p><strong>اصطلاحاً:</strong> انتقال ملك أحد بسبب الموت إلى ورثته الشرعية[cite: 3].</p>
-                            [cite_start]<p><strong>الغاية:</strong> إيصال الحقوق لذويها وحفظ حقوق الأرامل والأيتام[cite: 6].</p>
-                        </div>
-                    </div>
+    <div class="container">
+        <div class="main-content">
+            <h1>🕌 دليل دراسة علم الميراث والفرائض</h1>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('basics')">المقدمة والتعاريف</button>
+                <button class="tab" onclick="showTab('shares')">السهام المقدرة</button>
+                <button class="tab" onclick="showTab('heirs')">أحوال الورثة</button>
+                <button class="tab" onclick="showTab('asaba')">العصبة</button>
+                <button class="tab" onclick="showTab('hajb')">الحجب</button>
+            </div>
+            
+            <div id="basics" class="content-section active">
+                <h2>📚 المقدمة والتعاريف الأساسية</h2>
+                
+                <div class="card">
+                    <h3>تعريف الميراث</h3>
+                    <p><strong>لغة:</strong> مصدر من وَرِثَ يَرِثُ، ومعناه: انتقال شيء من شخص إلى شخص آخر</p>
+                    <p><strong>اصطلاحاً:</strong> عبارة عن انتقال ملك أحد بسبب الموت إلى ورثته الشرعية</p>
                 </div>
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        [cite_start]<div class="card-header">أركان الميراث [cite: 28]</div>
-                        <div class="card-body text-center">
-                            <div class="row">
-                                <div class="col-4">
-                                    <i class="fas fa-user-slash fa-2x mb-2 text-secondary"></i><br>
-                                    <strong>المورث</strong><br>(الميت)
-                                </div>
-                                <div class="col-4">
-                                    <i class="fas fa-users fa-2x mb-2 text-success"></i><br>
-                                    <strong>الوارث</strong><br>(الحي المستحق)
-                                </div>
-                                <div class="col-4">
-                                    <i class="fas fa-coins fa-2x mb-2 text-warning"></i><br>
-                                    <strong>الموروث</strong><br>(التركة)
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                
+                <div class="card">
+                    <h3>تعريف علم الفرائض</h3>
+                    <p>علم يبحث فيه عن انتقال ملك الميت إلى ورثته الأحياء، وعن أحوال تلك الورثة، وعن السهام المقدرة لكل واحد منهم، وعن تقسيمها</p>
+                </div>
+                
+                <div class="highlight">
+                    <h3>🎯 موضوع علم الميراث</h3>
+                    <p>السهام المقدرة ومستحقوها، أو التركة ومستحقها وقسمتها</p>
+                </div>
+                
+                <div class="highlight">
+                    <h3>✨ غاية علم الميراث</h3>
+                    <p>إيصال الحقوق (السهام) إلى الورثة أعني إلى مستحقيها، أو حفظ حقوق الأرامل والأيتام عن الضياع</p>
+                </div>
+                
+                <div class="card">
+                    <h3>مصادر علم الميراث</h3>
+                    <ol>
+                        <li><strong>الكتاب:</strong> آيات الميراث في سورة النساء والأنفال والأحزاب</li>
+                        <li><strong>السنة:</strong> أحاديث النبي ﷺ في الفرائض</li>
+                        <li><strong>الإجماع:</strong> إجماع الصحابة والتابعين</li>
+                    </ol>
+                </div>
+                
+                <div class="verse">
+                    <strong>الحديث الأساسي:</strong> «ألحقوا الفرائض بأهلها فما بقي فلأولى رجل ذكر» (متفق عليه)
+                </div>
+                
+                <h2>📋 المصطلحات الأساسية</h2>
+                
+                <div class="card">
+                    <ul>
+                        <li><strong>الفرض:</strong> النصيب المقرر شرعاً للوارث</li>
+                        <li><strong>السهم:</strong> الجزء المعيّن الذي يعطى لكل وارث</li>
+                        <li><strong>التركة:</strong> ما تركه الميت من الأموال والحقوق</li>
+                        <li><strong>النسب:</strong> البنوة والأبوة والإدلاء بأحدهما</li>
+                        <li><strong>الوارث:</strong> من يستحق سهماً من التركة</li>
+                        <li><strong>العصبة:</strong> من لا يكون له سهم مقدر ويأخذ ما بقي</li>
+                        <li><strong>الإدلاء:</strong> النسبة إلى الميت بأي طريق</li>
+                    </ul>
+                </div>
+                
+                <h2>🏛️ أركان الميراث</h2>
+                <div class="card">
+                    <ol>
+                        <li><strong>المورث:</strong> الميت الذي ترك ميراثاً</li>
+                        <li><strong>الوارث:</strong> الذي يستحق الميراث بسبب من أسباب الإرث</li>
+                        <li><strong>الموروث:</strong> التركة والميراث</li>
+                    </ol>
+                </div>
+                
+                <h2>🔗 أسباب الإرث</h2>
+                <div class="card">
+                    <ol>
+                        <li><strong>الزوجية</strong></li>
+                        <li><strong>القرابة</strong></li>
+                        <li><strong>الولاء:</strong> ولاء العتق وولاء الموالاة</li>
+                    </ol>
+                </div>
+                
+                <h2>✅ شروط الإرث</h2>
+                <div class="highlight">
+                    <ol>
+                        <li>موت المورث</li>
+                        <li>حياة الوارث</li>
+                        <li>انتفاء الموانع (القتل، الرق، اختلاف الدين)</li>
+                    </ol>
+                </div>
+                
+                <h2>🚫 موانع الإرث الأربعة</h2>
+                <div class="card">
+                    <ol>
+                        <li><strong>الرق:</strong> القن، المكاتب، المدبر، أم الولد</li>
+                        <li><strong>القتل:</strong> الموجب للقصاص أو الكفارة</li>
+                        <li><strong>اختلاف الدين:</strong> لا يرث الكافر المسلم ولا المسلم الكافر</li>
+                        <li><strong>اختلاف الدارين:</strong> بالنسبة للكفار القاطنين في دار الإسلام</li>
+                    </ol>
+                </div>
+                
+                <h2>📊 الحقوق المتعلقة بتركة الميت (مرتبة)</h2>
+                <div class="card">
+                    <ol>
+                        <li>تكفينه وتجهيزه ودفنه</li>
+                        <li>قضاء ديونه من جميع ما بقي</li>
+                        <li>تنفيذ وصاياه من ثلث ما بقي</li>
+                        <li>تقسيم الباقي بين ورثته</li>
+                    </ol>
                 </div>
             </div>
-        </section>
-
-        <section class="mb-5">
-            <div class="row">
-                <div class="col-lg-6">
-                    [cite_start]<h3 class="h4">الحقوق المتعلقة بالتركة (مرتبة) [cite: 31-34]</h3>
-                    <div class="mnemonic-box mb-3">
-                        <ol class="mb-0">
-                            <li><strong>التجهيز:</strong> (الكفن والدفن بلا إسراف).</li>
-                            <li><strong>الديون:</strong> قضاء الديون من جميع المال.</li>
-                            <li><strong>الوصية:</strong> تنفيذها في حدود الثلث.</li>
-                            <li><strong>الميراث:</strong> تقسيم الباقي على الورثة.</li>
+            
+            <div id="shares" class="content-section">
+                <h2>📐 السهام المقدرة في كتاب الله</h2>
+                
+                <div class="highlight">
+                    <h3>السهام الستة</h3>
+                    <ol>
+                        <li>النصف (١/٢)</li>
+                        <li>الربع (١/٤)</li>
+                        <li>الثمن (١/٨)</li>
+                        <li>الثلثان (٢/٣)</li>
+                        <li>الثلث (١/٣)</li>
+                        <li>السدس (١/٦)</li>
+                    </ol>
+                </div>
+                
+                <h2>👥 المستحقون لهذه السهام</h2>
+                
+                <div class="card">
+                    <h3>أربعة من الرجال:</h3>
+                    <ul>
+                        <li>الأب</li>
+                        <li>الجد الصحيح (أب الأب) وإن علا</li>
+                        <li>الأخ لأم</li>
+                        <li>الزوج</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>ثمان من النساء:</h3>
+                    <ul>
+                        <li>الزوجة</li>
+                        <li>البنت</li>
+                        <li>بنت الابن وإن سفلت</li>
+                        <li>الأخت لأب وأم</li>
+                        <li>الأخت لأب فقط</li>
+                        <li>الأخت لأم فقط</li>
+                        <li>الأم</li>
+                        <li>الجدة الصحيحة</li>
+                    </ul>
+                </div>
+                
+                <div class="verse">
+                    <strong>تعريف الجدة الصحيحة:</strong> التي لا يدخل في نسبتها إلى الميت جد فاسد (كأم الأم وأم الأب)
+                </div>
+                
+                <div class="verse">
+                    <strong>تعريف الجد الصحيح:</strong> الذي لا تكون في نسبته إلى الميت أم (كأب الأب)
+                </div>
+            </div>
+            
+            <div id="heirs" class="content-section">
+                <h2>👨‍👩‍👧‍👦 أحوال الورثة التفصيلية</h2>
+                
+                <div class="card">
+                    <h3>١. أحوال الأب (ثلاث أحوال)</h3>
+                    <ol>
+                        <li><strong>الفرض المطلق (السدس):</strong> مع ابن الميت أو ابن ابنه</li>
+                        <li><strong>الفرض والتعصيب معاً:</strong> مع بنت الميت أو بنت ابنه</li>
+                        <li><strong>التعصيب المحض:</strong> عند عدم الولد وولد الابن</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3>٢. أحوال الجد الصحيح (أربع أحوال)</h3>
+                    <p>كالأب في الأحوال الثلاث، بالإضافة إلى:</p>
+                    <ul>
+                        <li>سقوطه بالأب</li>
+                    </ul>
+                    <p><strong>الفروق بين الأب والجد:</strong></p>
+                    <ol>
+                        <li>أم الأب لا ترث مع الأب، وترث مع الجد</li>
+                        <li>للأم ثلث ما بقي مع الأب والزوج، وثلث جميع المال مع الجد</li>
+                        <li>الإخوة يسقطون مع الأب، ولا يسقطون مع الجد (إلا عند أبي حنيفة)</li>
+                        <li>أبو المعتق مع ابنه يأخذ سدس الولاء، والجد لا شيء له</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3>٣. أحوال الإخوة لأم (ثلاث أحوال)</h3>
+                    <ol>
+                        <li><strong>السدس:</strong> للواحد</li>
+                        <li><strong>الثلث:</strong> للاثنين فصاعداً (ذكورهم وإناثهم سواء)</li>
+                        <li><strong>السقوط:</strong> بالولد، ولد الابن، الأب، والجد</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3>٤. أحوال الزوج (حالتان)</h3>
+                    <ol>
+                        <li><strong>النصف:</strong> عند عدم الولد وولد الابن</li>
+                        <li><strong>الربع:</strong> مع الولد أو ولد الابن</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3>٥. أحوال الزوجة (حالتان)</h3>
+                    <ol>
+                        <li><strong>الربع:</strong> للواحدة فصاعداً إذا لم يكن للزوج ولد</li>
+                        <li><strong>الثمن:</strong> مع الولد أو ولد الابن</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3>٦. أحوال البنات الصلبية (ثلاث أحوال)</h3>
+                    <ol>
+                        <li><strong>النصف:</strong> للواحدة</li>
+                        <li><strong>الثلثان:</strong> للاثنتين فصاعداً</li>
+                        <li><strong>التعصيب:</strong> مع الابن للذكر مثل حظ الأنثيين</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3>٧. أحوال بنات الابن (ست أحوال)</h3>
+                    <ol>
+                        <li><strong>النصف:</strong> للواحدة عند عدم بنات الصلب</li>
+                        <li><strong>الثلثان:</strong> للاثنتين فصاعداً</li>
+                        <li><strong>السدس:</strong> مع الواحدة الصلبية تكملة للثلثين</li>
+                        <li><strong>لا يرثن:</strong> مع الصلبتين</li>
+                        <li><strong>التعصيب:</strong> إلا أن يكون غلام بحذاءهن أو أسفل منهن</li>
+                        <li><strong>السقوط:</strong> بالابن</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3>٨. أحوال الأخوات لأب وأم (خمس أحوال)</h3>
+                    <ol>
+                        <li><strong>النصف:</strong> للواحدة</li>
+                        <li><strong>الثلثان:</strong> للاثنتين فصاعداً</li>
+                        <li><strong>التعصيب:</strong> مع الأخ لأب وأم للذكر مثل حظ الأنثيين</li>
+                        <li><strong>التعصيب مع البنات:</strong> مع البنات أو بنات الابن</li>
+                        <li><strong>السقوط:</strong> بابن الميت، ابن الابن، الأب، والجد</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3>٩. أحوال الأخوات لأب (سبع أحوال)</h3>
+                    <ol>
+                        <li><strong>النصف:</strong> للواحدة</li>
+                        <li><strong>الثلثان:</strong> للاثنتين فصاعداً عند عدم الأخوات لأب وأم</li>
+                        <li><strong>السدس:</strong> مع الأخت لأب وأم تكملة للثلثين</li>
+                        <li><strong>لا يرثن:</strong> مع الأختين لأب وأم</li>
+                        <li><strong>التعصيب:</strong> بالأخ لأب</li>
+                        <li><strong>التعصيب مع البنات:</strong> مع البنات أو بنات الابن</li>
+                        <li><strong>السقوط:</strong> بالابن، ابن الابن، الأب، الجد، والأخ لأب وأم</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3>١٠. أحوال الأم (ثلاث أحوال)</h3>
+                    <ol>
+                        <li><strong>السدس:</strong> مع الولد أو ولد الابن، أو مع اثنين من الإخوة والأخوات فصاعداً</li>
+                        <li><strong>ثلث كل المال:</strong> عند عدم المذكورين</li>
+                        <li><strong>ثلث الباقي:</strong> بعد سهم أحد الزوجين (في مسألتي الغراويين)</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3>١١. أحوال الجدة (حالتان)</h3>
+                    <ol>
+                        <li><strong>السدس:</strong> واحدة كانت أو أكثر (للمتحاذيات في الدرجة)</li>
+                        <li><strong>السقوط:</strong> كلهن بالأم، والأبويات بالأب والجد (إلا أم الأب)</li>
+                    </ol>
+                    <p><strong>ملاحظة:</strong> الجدة القريبة تحجب البعيدة من أي جهة كانت</p>
+                </div>
+            </div>
+            
+            <div id="asaba" class="content-section">
+                <h2>🔷 العصبة وأقسامها</h2>
+                
+                <div class="highlight">
+                    <h3>تعريف العصبة</h3>
+                    <p><strong>لغة:</strong> قرابة الرجل من جانب أبيه</p>
+                    <p><strong>اصطلاحاً:</strong> من ليس له سهم مقدّر، بل يستحق ما بقي من أصحاب الفرائض عند وجودهم، ويحرز جميع المال عند عدمهم</p>
+                </div>
+                
+                <h2>أقسام العصبة النسبية (ثلاثة)</h2>
+                
+                <div class="card">
+                    <h3>١. العصبة بنفسه</h3>
+                    <p>كل ذكر لا تدخل في نسبته إلى الميت أنثى</p>
+                    <h4>الأصناف الأربعة (بالترتيب):</h4>
+                    <ol>
+                        <li><strong>جزء الميت:</strong> الابن، ابن الابن وإن سفل</li>
+                        <li><strong>أصله:</strong> الأب، الجد وإن علا</li>
+                        <li><strong>جزء أبيه:</strong> الأخ، ابن الأخ وإن سفل</li>
+                        <li><strong>جزء جده:</strong> العم، ابن العم وإن سفل</li>
+                    </ol>
+                    <div class="highlight">
+                        <p><strong>الترجيح:</strong></p>
+                        <ol>
+                            <li>بقرب الدرجة (الأقرب يحجب الأبعد)</li>
+                            <li>بقوة القرابة (ذو القرابتين أولى من ذي قرابة واحدة)</li>
                         </ol>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    [cite_start]<h3 class="h4 text-danger">موانع الإرث (مجموعة في "رق قتلا") [cite: 47-50]</h3>
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            <li><strong>الرق:</strong> العبودية (مانع كامل).</li>
-                            <li><strong>القتل:</strong> الموجب للقصاص أو الكفارة.</li>
-                            <li><strong>اختلاف الدين:</strong> لا يرث المسلم الكافر ولا العكس.</li>
-                            <li><strong>اختلاف الدارين:</strong> (حقيقة أو حكماً).</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="mb-5">
-            <h2 class="border-bottom pb-2 mb-4"><i class="fas fa-chart-pie"></i> ٢. السهام المقدرة ومستحقوها</h2>
-            [cite_start]<p class="text-muted">السهام في القرآن ستة: النصف، الربع، الثمن، الثلثان، الثلث، السدس[cite: 57].</p>
-            
-            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="pills-half-tab" data-bs-toggle="pill" data-bs-target="#pills-half" type="button" role="tab">النصف ومشتقاته (١/٢, ١/٤, ١/٨)</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="pills-third-tab" data-bs-toggle="pill" data-bs-target="#pills-third" type="button" role="tab">الثلثان ومشتقاته (٢/٣, ١/٣, ١/٦)</button>
-                </li>
-            </ul>
-
-            <div class="tab-content" id="pills-tabContent">
-                <div class="tab-pane fade show active" id="pills-half" role="tabpanel">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="card text-center h-100">
-                                <div class="card-body">
-                                    <span class="share-badge">١/٢ (النصف)</span>
-                                    <ul class="list-unstyled text-start">
-                                        <li><i class="fas fa-check text-success"></i> <strong>الزوج:</strong> عند عدم الفرع الوارث.</li>
-                                        <li><i class="fas fa-check text-success"></i> <strong>البنت:</strong> إذا كانت واحدة منفردة.</li>
-                                        <li><i class="fas fa-check text-success"></i> <strong>بنت الابن:</strong> واحدة منفردة (بدون بنت صلب).</li>
-                                        <li><i class="fas fa-check text-success"></i> <strong>الأخت الشقيقة:</strong> واحدة منفردة.</li>
-                                        <li><i class="fas fa-check text-success"></i> <strong>الأخت لأب:</strong> واحدة منفردة.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card text-center h-100">
-                                <div class="card-body">
-                                    <span class="share-badge">١/٤ (الربع)</span>
-                                    <ul class="list-unstyled text-start">
-                                        [cite_start]<li><i class="fas fa-check text-success"></i> <strong>الزوج:</strong> عند وجود الفرع الوارث[cite: 63].</li>
-                                        [cite_start]<li><i class="fas fa-check text-success"></i> <strong>الزوجة (أو الزوجات):</strong> عند عدم الفرع الوارث[cite: 64].</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card text-center h-100">
-                                <div class="card-body">
-                                    <span class="share-badge">١/٨ (الثمن)</span>
-                                    <ul class="list-unstyled text-start">
-                                        [cite_start]<li><i class="fas fa-check text-success"></i> <strong>الزوجة (أو الزوجات):</strong> عند وجود الفرع الوارث[cite: 65].</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="pills-third" role="tabpanel">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="card text-center h-100">
-                                <div class="card-body">
-                                    <span class="share-badge">٢/٣ (الثلثان)</span>
-                                    <p class="small text-muted">للإناث عند التعدد وعدم المعصب</p>
-                                    <ul class="list-unstyled text-start">
-                                        [cite_start]<li><i class="fas fa-check text-success"></i> <strong>البنتان فأكثر</strong>[cite: 66].</li>
-                                        <li><i class="fas fa-check text-success"></i> <strong>بنات الابن فأكثر</strong> (عند عدم البنت).</li>
-                                        <li><i class="fas fa-check text-success"></i> <strong>الأختان الشقيقتان فأكثر</strong>.</li>
-                                        <li><i class="fas fa-check text-success"></i> <strong>الأختان لأب فأكثر</strong>.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card text-center h-100">
-                                <div class="card-body">
-                                    <span class="share-badge">١/٣ (الثلث)</span>
-                                    <ul class="list-unstyled text-start">
-                                        [cite_start]<li><i class="fas fa-check text-success"></i> <strong>الأم:</strong> عند عدم الفرع الوارث وعدم الجمع من الإخوة[cite: 74].</li>
-                                        [cite_start]<li><i class="fas fa-check text-success"></i> <strong>الإخوة لأم:</strong> (اثنين فأكثر) بالتساوي[cite: 62].</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card text-center h-100">
-                                <div class="card-body">
-                                    <span class="share-badge">١/٦ (السدس)</span>
-                                    <p class="small text-muted">فرض "الجدات" و "الآباء"</p>
-                                    <ul class="list-unstyled text-start">
-                                        <li><i class="fas fa-check text-success"></i> <strong>الأب / الجد:</strong> مع الفرع الوارث الذكر.</li>
-                                        <li><i class="fas fa-check text-success"></i> <strong>الأم:</strong> مع الفرع الوارث أو جمع من الإخوة.</li>
-                                        [cite_start]<li><i class="fas fa-check text-success"></i> <strong>الجدة:</strong> (تستقل به أو يشتركن فيه)[cite: 78].</li>
-                                        [cite_start]<li><i class="fas fa-check text-success"></i> <strong>بنت الابن:</strong> مع البنت الصلبية (تكملة الثلثين)[cite: 67].</li>
-                                        <li><i class="fas fa-check text-success"></i> <strong>الأخت لأب:</strong> مع الشقيقة (تكملة الثلثين).</li>
-                                        <li><i class="fas fa-check text-success"></i> <strong>الأخ لأم:</strong> (الواحد).</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="mb-5">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card border-primary mb-3">
-                        <div class="card-header bg-primary text-white">العصبات (Asabah)</div>
-                        <div class="card-body">
-                            [cite_start]<p class="card-text">من يأخذ ما بقي بعد أصحاب الفروض، أو المال كله عند الانفراد[cite: 80].</p>
-                            <ul>
-                                <li><strong>عصبة بالنفس:</strong> جميع الذكور (إلا الزوج والأخ لأم). [cite_start]ترتيبهم: بنوة، أبوة، أخوة، عمومة[cite: 82].</li>
-                                [cite_start]<li><strong>عصبة بالغير:</strong> البنت مع الابن، الأخت مع الأخ (للذكر مثل حظ الأنثيين)[cite: 84].</li>
-                                [cite_start]<li><strong>عصبة مع الغير:</strong> الأخوات مع البنات[cite: 86].</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card border-danger mb-3">
-                        [cite_start]<div class="card-header bg-danger text-white">الحجب (Blocking) [cite: 92]</div>
-                        <div class="card-body">
-                            <p><strong>حجب حرمان:</strong> منع من الميراث بالكلية (مثل حجب الجد بالأب، وابن الابن بالابن). <br><em>قاعدة: كل من أدلى بواسطة حجبته تلك الواسطة (إلا أولاد الأم).</em></p>
-                            <p><strong>حجب نقصان:</strong> الانتقال من فرض أكبر إلى أصغر (مثل انتقال الزوج من النصف للربع بسبب الولد).</p>
-                            <div class="alert alert-info py-2">
-                                <strong>٦ لا يحجبون حجب حرمان أبداً:</strong><br>
-                                [cite_start]الابن، البنت، الأب، الأم، الزوج، الزوجة[cite: 94].
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <footer class="text-center text-muted mt-5 mb-3 pt-3 border-top">
-            <small>تم إنشاء هذا الملخص الرقمي بناءً على نص "علم الفرائض" المرفق.</small>
-        </footer>
-
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script>
-        function generatePDF() {
-            const element = document.getElementById('content-to-print');
-            const opt = {
-                margin:       [0.5, 0.5, 0.5, 0.5],
-                filename:     'mulakhas_faraid.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
-    </script>
-</body>
-</html>
+                
+                <div class="card">
+                    <h3>٢. العصبة بغيره</h3>
+                    <p>كل أنثى صاحبة فرض صارت عصبة بأخيها</p>
+                    <h4>الأربع من النسوة:</h4>
