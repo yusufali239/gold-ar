@@ -1,352 +1,787 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Do Not Press</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>كتاب الفرائض — نسخة للحفظ</title>
+
+  <!-- Arabic-friendly fonts (works if online; fallback if offline) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg: #0b0c10;
-      --fg: rgba(255,255,255,.88);
-      --muted: rgba(255,255,255,.55);
-      --glass: rgba(255,255,255,.06);
-      --glass2: rgba(255,255,255,.10);
-      --danger: #ff3b3b;
-      --ok: #7CFFB2;
-      --ring: rgba(255,255,255,.18);
+      --bg:#0b0f14;
+      --card:#121926;
+      --card2:#0f1622;
+      --text:#e9eef7;
+      --muted:#a8b3c7;
+      --line:#223046;
+      --accent:#7dd3fc;
+      --accent2:#a78bfa;
+      --ok:#34d399;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
     }
-    html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;}
-    .wrap{position:fixed;inset:0;display:grid;place-items:center;padding:24px;}
-    .card{
-      width:min(560px, 92vw);
-      border-radius:24px;
-      background: linear-gradient(180deg, var(--glass), rgba(255,255,255,.03));
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 30px 80px rgba(0,0,0,.45);
-      padding:22px;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-    .top{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;}
-    .title{font-weight:800;font-size:20px;letter-spacing:.2px;}
-    .subtitle{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.35}
-    .meter{
-      height:10px;border-radius:999px;background:rgba(255,255,255,.08);
-      overflow:hidden;border:1px solid rgba(255,255,255,.12);
-      margin:14px 0 18px;
-    }
-    .meter > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--ok),#ffd36a,var(--danger));transition:width 350ms ease;}
-    .center{display:grid;place-items:center;padding:18px 0 6px;}
 
-    /* The Button */
-    .btn{
-      position:relative;
-      width:min(420px, 86vw);
-      height:78px;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 800px at 20% -10%, rgba(167,139,250,.18), transparent 55%),
+                  radial-gradient(900px 600px at 100% 0%, rgba(125,211,252,.14), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      font-family: "Noto Naskh Arabic","Amiri", system-ui, sans-serif;
+      line-height:1.85;
+    }
+
+    header{
+      position: sticky;
+      top:0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(11,15,20,.7);
+      border-bottom:1px solid rgba(34,48,70,.6);
+    }
+
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .topbar{
+      display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+    }
+    .title{
+      font-weight:700;
+      letter-spacing:.2px;
+      font-size:20px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .badge{
+      font-size:12px;
+      padding:4px 10px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background: radial-gradient(120% 140% at 30% 20%, rgba(255,255,255,.16), rgba(255,255,255,.04) 45%, rgba(255,255,255,.03));
-      box-shadow:
-        0 18px 50px rgba(0,0,0,.45),
-        0 2px 0 rgba(255,255,255,.18) inset;
-      color: rgba(255,255,255,.92);
-      font-weight:900;
-      font-size:16px;
-      letter-spacing:.4px;
+      background: rgba(125,211,252,.12);
+      border:1px solid rgba(125,211,252,.25);
+      color: var(--accent);
+    }
+
+    .controls{
+      margin-inline-start:auto;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    .input, .btn, select{
+      border-radius: 12px;
+      border:1px solid rgba(34,48,70,.8);
+      background: rgba(18,25,38,.85);
+      color: var(--text);
+      padding:10px 12px;
+      outline:none;
+      box-shadow: none;
+      font-family: inherit;
+    }
+    .input{min-width: 260px}
+    .btn{
       cursor:pointer;
+      transition: transform .06s ease, border-color .15s ease, background .15s ease;
       user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      transform: translateZ(0);
-      transition: transform 160ms ease, filter 200ms ease, border-color 200ms ease;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn:hover{border-color: rgba(125,211,252,.6)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(125,211,252,.22), rgba(167,139,250,.18));
+      border-color: rgba(125,211,252,.45);
+    }
+    .btn.ghost{
+      background: rgba(18,25,38,.55);
+    }
+
+    main{padding: 18px 0 50px}
+    .grid{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap:16px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      .input{min-width: 180px}
+    }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(18,25,38,.88), rgba(15,22,34,.78));
+      border:1px solid rgba(34,48,70,.75);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .btn:active{ transform: translateY(1px) scale(.995); }
-
-    /* “Reflection” streak */
-    .btn::before{
-      content:"";
-      position:absolute; inset:-50% -30%;
-      background: linear-gradient(90deg,
-        rgba(255,255,255,0) 0%,
-        rgba(255,255,255,.35) 35%,
-        rgba(255,255,255,.10) 50%,
-        rgba(255,255,255,0) 70%
-      );
-      transform: rotate(18deg) translateX(-70%);
-      animation: shine 2.2s ease-in-out infinite;
-      pointer-events:none;
-      opacity:.75;
+    .panel .head{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(34,48,70,.75);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
     }
-    @keyframes shine{
-      0%{transform:rotate(18deg) translateX(-80%); opacity:.55;}
-      55%{transform:rotate(18deg) translateX(70%); opacity:.95;}
-      100%{transform:rotate(18deg) translateX(130%); opacity:0;}
+    .panel .head h3{
+      margin:0;
+      font-size:16px;
+      color: var(--text);
     }
+    .panel .body{padding: 12px 14px 14px}
 
-    /* Glitch overlay */
-    .glitch{
-      position:absolute; inset:0; pointer-events:none;
-      background:
-        linear-gradient(90deg, rgba(255,0,80,.0), rgba(255,0,80,.0)),
-        linear-gradient(90deg, rgba(0,220,255,.0), rgba(0,220,255,.0));
-      mix-blend-mode: screen;
-      opacity:0;
-      transition:opacity 180ms ease;
+    .toc a{
+      display:block;
+      text-decoration:none;
+      color: var(--text);
+      padding:10px 10px;
+      border-radius: 12px;
+      border:1px solid transparent;
+      transition: background .15s ease, border-color .15s ease;
+    }
+    .toc a small{display:block; color: var(--muted); margin-top:2px}
+    .toc a:hover{
+      background: rgba(125,211,252,.10);
+      border-color: rgba(125,211,252,.25);
+    }
+    .toc a.active{
+      background: rgba(167,139,250,.12);
+      border-color: rgba(167,139,250,.30);
     }
 
-    .msg{margin-top:14px;min-height:52px;color:var(--muted);font-size:13px;line-height:1.45;}
-    .foot{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:10px;}
-    .tag{font-size:12px;color:rgba(255,255,255,.55)}
-    .link{
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.14);
-      padding:8px 10px;border-radius:12px;
-      cursor:pointer;color:rgba(255,255,255,.9);
-      font-weight:700;font-size:12px;
+    .content{
+      padding: 18px 18px 30px;
     }
-    .link:active{transform:translateY(1px)}
-
-    /* Stage styles (the button “breaks”) */
-    body.stage-0 { --bg:#0b0c10; }
-    body.stage-1 { --bg:#07080c; }
-    body.stage-2 { --bg:#06060a; }
-    body.stage-3 { --bg:#050509; }
-    body.stage-4 { --bg:#040407; }
-
-    body.stage-2 .btn{ filter: contrast(1.08) saturate(1.15); }
-    body.stage-3 .btn{ border-color: rgba(255,59,59,.35); }
-    body.stage-4 .btn{
-      filter: contrast(1.18) saturate(1.25);
-      box-shadow: 0 30px 90px rgba(255,59,59,.12), 0 18px 50px rgba(0,0,0,.55);
+    .section{
+      padding: 16px 16px;
+      border:1px solid rgba(34,48,70,.75);
+      border-radius: var(--radius);
+      background: rgba(18,25,38,.55);
+      margin-bottom: 14px;
     }
-    body.stage-3 .glitch,
-    body.stage-4 .glitch{ opacity:.85; }
-
-    /* Subtle screen shake */
-    .shake{
-      animation: shake 180ms linear 1;
+    .section h2{
+      margin:0 0 8px;
+      font-size:20px;
     }
-    @keyframes shake{
-      0%{transform:translate(0,0)}
-      20%{transform:translate(2px,-1px)}
-      40%{transform:translate(-2px,1px)}
-      60%{transform:translate(2px,1px)}
-      80%{transform:translate(-1px,-2px)}
-      100%{transform:translate(0,0)}
+    .meta{
+      color: var(--muted);
+      font-size: 13px;
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-bottom: 10px;
     }
 
-    /* Scanlines for vibe */
-    .scanlines{
-      position:fixed; inset:0; pointer-events:none; z-index:999;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,.00) 0px,
-        rgba(255,255,255,.00) 2px,
-        rgba(0,0,0,.10) 3px
-      );
-      opacity:.12;
+    /* memorization tools */
+    .tools{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin: 10px 0 0;
     }
 
-    /* Accessible focus */
-    .btn:focus-visible, .link:focus-visible{
-      outline:none;
-      box-shadow: 0 0 0 3px rgba(255,255,255,.12), 0 0 0 1px rgba(255,255,255,.26) inset, 0 18px 50px rgba(0,0,0,.45);
+    details{
+      border:1px solid rgba(34,48,70,.7);
+      border-radius: 14px;
+      background: rgba(15,22,34,.55);
+      padding: 10px 12px;
+      margin: 10px 0 0;
+    }
+    summary{
+      cursor:pointer;
+      color: var(--accent);
+      font-weight:600;
+      list-style:none;
+    }
+    summary::-webkit-details-marker{display:none}
+
+    .flashgrid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 700px){ .flashgrid{grid-template-columns:1fr} }
+
+    .card{
+      border:1px solid rgba(34,48,70,.75);
+      border-radius: 16px;
+      background: rgba(11,15,20,.25);
+      padding: 12px 12px;
+    }
+    .card .q{
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .card .a{
+      font-size: 18px;
+      font-weight:700;
+    }
+    .card .reveal{
+      margin-top:8px;
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+
+    mark{
+      background: rgba(251,191,36,.25);
+      color: var(--text);
+      padding: 0 .15em;
+      border-radius: 6px;
+    }
+
+    .footer{
+      color: var(--muted);
+      font-size: 12px;
+      padding: 10px 0 0;
+    }
+
+    .progress{
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(34,48,70,.6);
+      overflow:hidden;
+      border:1px solid rgba(34,48,70,.8);
+    }
+    .progress > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(125,211,252,.9), rgba(167,139,250,.9));
+      transition: width .2s ease;
+    }
+
+    .note{
+      width:100%;
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(34,48,70,.75);
+      background: rgba(18,25,38,.55);
+      color: var(--muted);
+      font-size: 12px;
     }
   </style>
 </head>
+
 <body>
-  <div class="wrap" id="wrap">
-    <div class="card">
-      <div class="top">
-        <div>
-          <div class="title" id="title">DON’T PRESS IT</div>
-          <div class="subtitle" id="subtitle">На странице всего одна кнопка. И это не делает ситуацию безопасной.</div>
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">
+        كتاب الفرائض — نسخة للحفظ
+        <span class="badge">بحث • بطاقات • اختبار</span>
+      </div>
+
+      <div class="controls">
+        <input id="search" class="input" type="search" placeholder="ابحث في النص..." />
+        <button class="btn ghost" id="toggleMarks">إخفاء/إظهار التحديد</button>
+        <button class="btn primary" id="toggleFocus">وضع الحفظ</button>
+        <select id="fontSize" title="حجم الخط">
+          <option value="18">18</option>
+          <option value="20" selected>20</option>
+          <option value="22">22</option>
+          <option value="24">24</option>
+          <option value="26">26</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+      <div class="pill">الصفحات: HTML</div>
+      <div class="pill" id="stats">0 قسم • 0 بطاقة</div>
+      <div style="flex:1"></div>
+      <div style="min-width:240px; width:320px;">
+        <div class="progress" title="تقدّم القراءة">
+          <div id="bar"></div>
         </div>
-        <div class="tag" id="counterTag">presses: 0</div>
-      </div>
-
-      <div class="meter" aria-hidden="true"><i id="meterBar"></i></div>
-
-      <div class="center">
-        <button class="btn" id="btn" type="button">
-          <span id="btnText">Не нажимай</span>
-          <span class="glitch" id="glitch"></span>
-        </button>
-      </div>
-
-      <div class="msg" id="msg"></div>
-
-      <div class="foot">
-        <div class="tag" id="mood">mood: calm</div>
-        <button class="link" id="reset" type="button">Стереть память</button>
       </div>
     </div>
   </div>
+</header>
 
-  <div class="scanlines"></div>
+<main class="wrap">
+  <div class="grid">
+    <!-- Sidebar -->
+    <aside class="panel">
+      <div class="head">
+        <h3>فهرس</h3>
+        <button class="btn ghost" id="clearProgress">تصفير التقدّم</button>
+      </div>
+      <div class="body">
+        <div class="toc" id="toc"></div>
 
-  <script>
-    const $ = (id)=>document.getElementById(id);
+        <details>
+          <summary>📌 ملاحظاتي</summary>
+          <textarea id="notes" class="input note" placeholder="اكتب ملاحظاتك هنا... (تُحفظ تلقائياً)"></textarea>
+        </details>
 
-    const btn = $("btn");
-    const btnText = $("btnText");
-    const title = $("title");
-    const subtitle = $("subtitle");
-    const msg = $("msg");
-    const meterBar = $("meterBar");
-    const counterTag = $("counterTag");
-    const mood = $("mood");
-    const reset = $("reset");
-    const wrap = $("wrap");
-    const glitch = $("glitch");
+        <details>
+          <summary>🧠 اختبار سريع (Flash Quiz)</summary>
+          <div id="quiz"></div>
+          <div class="tools">
+            <button class="btn primary" id="newQuiz">اختبار جديد</button>
+            <button class="btn ghost" id="showAnswers">إظهار الإجابات</button>
+          </div>
+        </details>
 
-    const KEY = "do-not-press-state-v1";
-    const state = load() ?? { presses: 0, stage: 0, last: 0 };
+        <div class="footer">
+          ✅ كل شيء يحفظ تلقائياً في جهازك (LocalStorage).<br>
+          ⚡ افتح الملف على الهاتف ويشتغل مثل كتاب.
+        </div>
+      </div>
+    </aside>
 
-    const LINES = [
-      "…",
-      "Серьёзно? Это же было написано.",
-      "Окей. Один раз — случайность.",
-      "Ты проверяешь границы. Я вижу.",
-      "Пожалуйста… перестань.",
-      "Ты уверен, что это ты нажимаешь кнопку, а не она тебя?",
-      "Интерфейс не обязан быть дружелюбным.",
-      "Мне становится… неприятно.",
-      "Слышишь этот тишинный звук? Это твоя ответственность.",
-      "Дальше будет хуже. (Для нас обоих.)",
-    ];
+    <!-- Content -->
+    <section class="panel">
+      <div class="head">
+        <h3 id="currentTitle">المحتوى</h3>
+        <div class="tools">
+          <button class="btn ghost" id="bookmarkBtn">⭐ حفظ علامة</button>
+          <button class="btn ghost" id="copyLinkBtn">🔗 نسخ رابط القسم</button>
+        </div>
+      </div>
 
-    const BUTTON_LABELS = [
-      "Не нажимай",
-      "Не надо",
-      "Стоп",
-      "Хватит",
-      "Ты серьёзно?",
-      "Последнее предупреждение",
-      "…",
-      "Ладно. Делай.",
-      "Это уже странно",
-      "Ты доволен?"
-    ];
+      <div class="content" id="content"></div>
+    </section>
+  </div>
+</main>
 
-    const MOODS = ["calm","uneasy","tense","angry","broken"];
+<script>
+/**
+ * ====== CONTENT (Paste your Arabic text here) ======
+ * Structure: sections[] each has id, title, subtitle, body, flashcards[], quiz[]
+ */
+const sections = [
+  {
+    id: "t1",
+    title: "تعريف الميراث لغةً واصطلاحًا",
+    subtitle: "نص + بطاقات للحفظ",
+    body: `
+<p><b>تعريف الميراث لغةً:</b> الميراث مصدر من ورث، وهو انتقال الشيء من شخص إلى شخص آخر...</p>
+<p><b>واصطلاحًا:</b> عبارة عن انتقال ملك أحد بسبب الموت إلى ورثته الحقيقية.</p>
+`,
+    flashcards: [
+      {q:"تعريف الميراث لغةً؟", a:"انتقال الشيء من شخص إلى شخص آخر."},
+      {q:"تعريف الميراث اصطلاحًا؟", a:"انتقال ملك أحد بسبب الموت إلى ورثته."}
+    ],
+    quiz: [
+      {q:"كم عدد أركان الميراث؟", a:"ثلاثة"},
+      {q:"اذكر سببين من أسباب الإرث.", a:"النسب، النكاح (وأيضًا الولاء، بيت المال عند عدم الوارث)"}
+    ]
+  },
 
-    applyState();
+  {
+    id: "t2",
+    title: "تعريف علم الفرائض",
+    subtitle: "مختصر واضح",
+    body: `
+<p>هو علم يُبحث فيه عن انتقال ملك الميت إلى ورثته الأحياء، وعن أحوال الورثة، والسهام المقدّرة...</p>
+`,
+    flashcards: [
+      {q:"ما موضوع علم الفرائض؟", a:"التركة والسهام ومستحقوها."},
+      {q:"لماذا سمي علم الفرائض؟", a:"لأن مسائله مبنية على الفروض المقدّرة."}
+    ],
+    quiz: [
+      {q:"اذكر مصادر علم الميراث.", a:"الكتاب، السنة، الإجماع"}
+    ]
+  },
 
-    btn.addEventListener("click", () => {
-      state.presses++;
-      state.stage = Math.min(4, Math.floor(state.presses / 3)); // 0..4
-      state.last = Date.now();
-      save(state);
+  {
+    id: "t3",
+    title: "المصطلحات الأساسية",
+    subtitle: "تعريفات مركّزة للحفظ",
+    body: `
+<ul>
+  <li><b>الفرض:</b> هو النصيب المقدر شرعًا للوارث...</li>
+  <li><b>السهم:</b> هو الجزء المعين الذي يعطى لكل وارث...</li>
+  <li><b>التركة:</b> ما تركه الميت من الأموال والحقوق...</li>
+  <li><b>السبب:</b> ما يكون سببًا للإرث كالنكاح والولاء...</li>
+</ul>
+`,
+    flashcards: [
+      {q:"ما هو الفرض؟", a:"النصيب المقدر شرعًا للوارث."},
+      {q:"ما هي التركة؟", a:"ما تركه الميت من الأموال والحقوق."}
+    ],
+    quiz: [
+      {q:"السبب من أمثلته؟", a:"النكاح والولاء"}
+    ]
+  },
 
-      // feedback
-      pulse();
-      scare();
-      applyState();
+  {
+    id: "t4",
+    title: "أركان الميراث + أسباب الإرث + شروط الإرث",
+    subtitle: "ثلاثيات للحفظ السريع",
+    body: `
+<p><b>أركان الميراث:</b> المورث، الوارث، التركة.</p>
+<p><b>أسباب الإرث:</b> النسب، النكاح، الولاء، بيت المال عند عدم الوارث.</p>
+<p><b>شروط الإرث:</b> تحقق موت المورث، تحقق حياة الوارث، العلم بالجهة المقتضية للإرث.</p>
+`,
+    flashcards: [
+      {q:"أركان الميراث؟", a:"المورث، الوارث، التركة."},
+      {q:"شروط الإرث؟", a:"موت المورث، حياة الوارث، العلم بالجهة."}
+    ],
+    quiz: [
+      {q:"اذكر سببًا غير النسب.", a:"النكاح أو الولاء"}
+    ]
+  },
+
+  {
+    id: "t5",
+    title: "التدريب",
+    subtitle: "أسئلة مراجعة",
+    body: `
+<ol>
+  <li>اذكر تعريف علم الميراث، وموضوعه، وفائدته.</li>
+  <li>بيّن أركان الميراث وأسبابه.</li>
+  <li>ما هي شروط الإرث؟</li>
+  <li>اذكر بعض المصطلحات الأساسية لعلم الميراث.</li>
+</ol>
+`
+  }
+];
+
+/* ====== UI RENDER ====== */
+const $ = (s)=>document.querySelector(s);
+const toc = $("#toc");
+const content = $("#content");
+const search = $("#search");
+const stats = $("#stats");
+const bar = $("#bar");
+const currentTitle = $("#currentTitle");
+
+const LS = {
+  key: "faraid_book_v1",
+  load(){ try{ return JSON.parse(localStorage.getItem(this.key) || "{}"); }catch(e){ return {}; } },
+  save(data){ localStorage.setItem(this.key, JSON.stringify(data)); }
+};
+
+let state = LS.load();
+state.progress = state.progress || {};      // sectionId -> percentRead (0/1 simple)
+state.bookmark = state.bookmark || null;    // sectionId
+state.notes = state.notes || "";
+state.focus = state.focus || false;
+state.hideMarks = state.hideMarks || false;
+state.fontSize = state.fontSize || 20;
+
+function renderTOC(){
+  toc.innerHTML = "";
+  sections.forEach((sec, i)=>{
+    const a = document.createElement("a");
+    a.href = "#" + sec.id;
+    a.dataset.id = sec.id;
+    a.innerHTML = `${sec.title}<small>${sec.subtitle || "قسم"} • ${i+1}/${sections.length}</small>`;
+    a.onclick = (e)=>{ e.preventDefault(); goTo(sec.id); };
+    toc.appendChild(a);
+  });
+}
+
+function renderContent(){
+  content.innerHTML = "";
+  let cardCount = 0;
+
+  sections.forEach((sec)=>{
+    const div = document.createElement("div");
+    div.className = "section";
+    div.id = sec.id;
+
+    const metaBits = [];
+    if (sec.subtitle) metaBits.push(sec.subtitle);
+    if (sec.flashcards?.length) metaBits.push(`بطاقات: ${sec.flashcards.length}`);
+    if (sec.quiz?.length) metaBits.push(`أسئلة: ${sec.quiz.length}`);
+
+    div.innerHTML = `
+      <h2>${sec.title}</h2>
+      <div class="meta">${metaBits.map(x=>`<span class="pill">${x}</span>`).join("")}</div>
+      <div class="text" style="font-size:${state.fontSize}px">${sec.body || ""}</div>
+      ${sec.flashcards?.length ? flashHTML(sec.flashcards, sec.id) : ""}
+      <div class="tools">
+        <button class="btn ghost" data-mark="${sec.id}">✅ تم</button>
+        <button class="btn ghost" data-top="${sec.id}">⬆️ للأعلى</button>
+      </div>
+    `;
+    content.appendChild(div);
+
+    cardCount += (sec.flashcards?.length || 0);
+  });
+
+  stats.textContent = `${sections.length} قسم • ${cardCount} بطاقة`;
+  attachSectionButtons();
+}
+
+function flashHTML(cards, secId){
+  const html = cards.map((c, idx)=>`
+    <div class="card" data-flash="${secId}:${idx}">
+      <div class="q">سؤال</div>
+      <div class="a">${escapeHTML(c.q)}</div>
+      <div class="reveal">
+        <button class="btn primary" data-reveal="${secId}:${idx}">أظهر الجواب</button>
+        <span class="pill" data-answer="${secId}:${idx}" style="display:none">الجواب: ${escapeHTML(c.a)}</span>
+      </div>
+    </div>
+  `).join("");
+
+  return `
+    <details>
+      <summary>🧠 بطاقات للحفظ (افتح)</summary>
+      <div class="flashgrid">${html}</div>
+    </details>
+  `;
+}
+
+function attachSectionButtons(){
+  content.querySelectorAll("[data-reveal]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const id = btn.getAttribute("data-reveal");
+      const ans = content.querySelector(`[data-answer="${id}"]`);
+      if (!ans) return;
+      const isHidden = ans.style.display === "none";
+      ans.style.display = isHidden ? "inline-flex" : "none";
+      btn.textContent = isHidden ? "أخفِ الجواب" : "أظهر الجواب";
+      updateProgress();
     });
+  });
 
-    reset.addEventListener("click", () => {
-      localStorage.removeItem(KEY);
-      location.reload();
+  content.querySelectorAll("[data-mark]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const id = btn.getAttribute("data-mark");
+      state.progress[id] = 1;
+      save();
+      updateTOCActive(id);
+      updateProgress();
+      toast("تم ✅");
     });
+  });
 
-    function applyState(){
-      document.body.className = `stage-${state.stage}`;
+  content.querySelectorAll("[data-top]").forEach(btn=>{
+    btn.addEventListener("click", ()=> window.scrollTo({top:0, behavior:"smooth"}));
+  });
+}
 
-      const p = state.presses;
-      counterTag.textContent = `presses: ${p}`;
+function updateTOCActive(id){
+  toc.querySelectorAll("a").forEach(a=>a.classList.toggle("active", a.dataset.id === id));
+  const sec = sections.find(s=>s.id===id);
+  if (sec) currentTitle.textContent = sec.title;
+}
 
-      // meter 0..100
-      const m = Math.min(100, Math.round((p / 12) * 100));
-      meterBar.style.width = m + "%";
+function goTo(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({behavior:"smooth", block:"start"});
+  updateTOCActive(id);
+  // update URL hash
+  history.replaceState(null, "", "#" + id);
+}
 
-      // texts
-      title.textContent = titleText(state.stage, p);
-      subtitle.textContent = subtitleText(state.stage, p);
+function updateProgress(){
+  const done = Object.values(state.progress).filter(v=>v===1).length;
+  const pct = Math.round((done / sections.length) * 100);
+  bar.style.width = pct + "%";
+}
 
-      const line = LINES[Math.min(LINES.length-1, p)] ?? "…";
-      msg.textContent = line;
+function applyFocusMode(){
+  document.body.style.filter = state.focus ? "none" : "none";
+  // focus mode: hide sidebar a bit
+  const grid = document.querySelector(".grid");
+  if (state.focus){
+    grid.style.gridTemplateColumns = "1fr";
+    document.querySelector("aside.panel").style.display = "none";
+  } else {
+    grid.style.gridTemplateColumns = "";
+    document.querySelector("aside.panel").style.display = "";
+  }
+  $("#toggleFocus").textContent = state.focus ? "إلغاء وضع الحفظ" : "وضع الحفظ";
+}
 
-      btnText.textContent = BUTTON_LABELS[Math.min(BUTTON_LABELS.length-1, p)] ?? "…";
+function applyMarks(){
+  $("#toggleMarks").textContent = state.hideMarks ? "إظهار التحديد" : "إخفاء/إظهار التحديد";
+  // no global marks by default, but search highlights use <mark>
+  // we simply remove marks if hidden
+  if (state.hideMarks){
+    content.querySelectorAll("mark").forEach(m=>{
+      const t = document.createTextNode(m.textContent);
+      m.replaceWith(t);
+    });
+  }
+}
 
-      mood.textContent = `mood: ${MOODS[state.stage]}`;
+function applyFontSize(){
+  $("#fontSize").value = String(state.fontSize);
+  content.querySelectorAll(".text").forEach(t=>{
+    t.style.fontSize = state.fontSize + "px";
+  });
+}
 
-      // glitch intensity
-      const g = Math.min(1, state.stage / 4);
-      glitch.style.background =
-        `linear-gradient(90deg, rgba(255,0,80,${0.25*g}), rgba(255,0,80,0)),
-         linear-gradient(90deg, rgba(0,220,255,${0.22*g}), rgba(0,220,255,0))`;
+/* ====== SEARCH ====== */
+function doSearch(q){
+  // remove old marks
+  content.querySelectorAll("mark").forEach(m=>{
+    const t = document.createTextNode(m.textContent);
+    m.replaceWith(t);
+  });
+  if (!q || state.hideMarks) return;
 
-      // tiny usability sabotage
-      if (state.stage >= 3) {
-        // small random drift (but not unusable)
-        const dx = (Math.random() - 0.5) * 10;
-        const dy = (Math.random() - 0.5) * 6;
-        btn.style.transform = `translate(${dx}px, ${dy}px)`;
-      } else {
-        btn.style.transform = "translate(0,0)";
-      }
+  const rx = new RegExp(escapeRegExp(q), "g");
+  // highlight inside sections text only
+  content.querySelectorAll(".text").forEach(node=>{
+    const html = node.innerHTML;
+    node.innerHTML = html.replace(rx, (m)=>`<mark>${m}</mark>`);
+  });
+}
 
-      // stage-specific behavior
-      if (state.stage === 4) {
-        btn.style.filter = "contrast(1.22) saturate(1.35)";
-      } else {
-        btn.style.filter = "";
-      }
-    }
+/* ====== QUIZ ====== */
+function buildQuiz(){
+  const pool = [];
+  sections.forEach(sec=>{
+    (sec.quiz || []).forEach(item=> pool.push({secId: sec.id, ...item}));
+  });
+  const quizBox = $("#quiz");
+  quizBox.innerHTML = "";
 
-    function titleText(stage, presses){
-      if (presses === 0) return "DON’T PRESS IT";
-      if (stage === 0) return "You saw the warning.";
-      if (stage === 1) return "It remembers.";
-      if (stage === 2) return "Stop testing it.";
-      if (stage === 3) return "Enough.";
-      return "…";
-    }
+  if (!pool.length){
+    quizBox.innerHTML = `<div class="pill">لا يوجد اختبار في هذا النص.</div>`;
+    return;
+  }
 
-    function subtitleText(stage, presses){
-      if (presses === 0) return "На странице всего одна кнопка. И это не делает ситуацию безопасной.";
-      if (stage === 0) return "Теперь мы оба знаем, что ты не умеешь останавливаться.";
-      if (stage === 1) return "Кнопка меняется. Ты тоже.";
-      if (stage === 2) return "Интерфейс начинает защищаться.";
-      if (stage === 3) return "Ты хотел взаимодействие. Получай.";
-      return "Окей. Нажимай дальше. Посмотрим, кто первый устанет.";
-    }
+  // pick 5 random
+  const pick = shuffle([...pool]).slice(0, Math.min(5, pool.length));
+  pick.forEach((item, i)=>{
+    const wrap = document.createElement("div");
+    wrap.className = "card";
+    wrap.innerHTML = `
+      <div class="q">سؤال ${i+1} • من قسم: <b>${sections.find(s=>s.id===item.secId)?.title || item.secId}</b></div>
+      <div class="a">${escapeHTML(item.q)}</div>
+      <div class="reveal">
+        <span class="pill ans" style="display:none">الجواب: ${escapeHTML(item.a)}</span>
+        <button class="btn primary show">أظهر الجواب</button>
+        <button class="btn ghost goto" title="اذهب للقسم">اذهب</button>
+      </div>
+    `;
+    wrap.querySelector(".show").onclick = ()=>{
+      const ans = wrap.querySelector(".ans");
+      const isHidden = ans.style.display === "none";
+      ans.style.display = isHidden ? "inline-flex" : "none";
+    };
+    wrap.querySelector(".goto").onclick = ()=> goTo(item.secId);
+    quizBox.appendChild(wrap);
+  });
+}
 
-    function pulse(){
-      btn.classList.remove("shake");
-      // force reflow
-      void btn.offsetWidth;
-      btn.classList.add("shake");
-    }
+$("#newQuiz").addEventListener("click", buildQuiz);
+$("#showAnswers").addEventListener("click", ()=>{
+  document.querySelectorAll("#quiz .ans").forEach(a=> a.style.display="inline-flex");
+});
 
-    function scare(){
-      // quick background pulse
-      const t = document.documentElement;
-      t.animate(
-        [{ filter: "brightness(1)" }, { filter: "brightness(1.12)" }, { filter: "brightness(1)" }],
-        { duration: 180, easing: "linear" }
-      );
+/* ====== BUTTONS ====== */
+$("#toggleFocus").addEventListener("click", ()=>{
+  state.focus = !state.focus;
+  save();
+  applyFocusMode();
+});
 
-      // stage-based soundless “panic” via micro blur
-      if (state.stage >= 2) {
-        wrap.animate(
-          [{ filter: "blur(0px)" }, { filter: "blur(1.6px)" }, { filter: "blur(0px)" }],
-          { duration: 220, easing: "ease-out" }
-        );
-      }
-    }
+$("#toggleMarks").addEventListener("click", ()=>{
+  state.hideMarks = !state.hideMarks;
+  save();
+  applyMarks();
+  doSearch(search.value.trim());
+});
 
-    function save(obj){
-      localStorage.setItem(KEY, JSON.stringify(obj));
-    }
-    function load(){
-      try{
-        const raw = localStorage.getItem(KEY);
-        return raw ? JSON.parse(raw) : null;
-      }catch{ return null; }
-    }
-  </script>
+$("#clearProgress").addEventListener("click", ()=>{
+  state.progress = {};
+  save();
+  updateProgress();
+  toast("تم التصفير.");
+});
+
+$("#bookmarkBtn").addEventListener("click", ()=>{
+  const id = location.hash?.slice(1) || sections[0].id;
+  state.bookmark = id;
+  save();
+  toast("تم حفظ العلامة ⭐");
+});
+
+$("#copyLinkBtn").addEventListener("click", async ()=>{
+  const id = location.hash?.slice(1) || sections[0].id;
+  const url = location.origin + location.pathname + "#" + id;
+  try{
+    await navigator.clipboard.writeText(url);
+    toast("تم نسخ الرابط 🔗");
+  }catch(e){
+    toast("ما قدر ينسخ (صلاحيات المتصفح).");
+  }
+});
+
+/* ====== NOTES ====== */
+const notes = $("#notes");
+notes.value = state.notes || "";
+notes.addEventListener("input", ()=>{
+  state.notes = notes.value;
+  save();
+});
+
+/* ====== SEARCH INPUT ====== */
+search.addEventListener("input", ()=>{
+  doSearch(search.value.trim());
+});
+
+/* ====== FONT SIZE ====== */
+$("#fontSize").addEventListener("change", (e)=>{
+  state.fontSize = parseInt(e.target.value, 10);
+  save();
+  applyFontSize();
+});
+
+/* ====== HELPERS ====== */
+function save(){ LS.save(state); }
+
+function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, (m)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+}
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function toast(msg){
+  const t = document.createElement("div");
+  t.textContent = msg;
+  t.style.position="fixed";
+  t.style.bottom="18px";
+  t.style.left="18px";
+  t.style.padding="10px 12px";
+  t.style.borderRadius="14px";
+  t.style.background="rgba(18,25,38,.92)";
+  t.style.border="1px solid rgba(34,48,70,.8)";
+  t.style.boxShadow="0 10px 30px rgba(0,0,0,.35)";
+  t.style.zIndex="999";
+  document.body.appendChild(t);
+  setTimeout(()=> t.remove(), 1400);
+}
+
+/* ====== INIT ====== */
+renderTOC();
+renderContent();
+applyFocusMode();
+applyMarks();
+applyFontSize();
+buildQuiz();
+updateProgress();
+
+const initial = location.hash?.slice(1) || state.bookmark || sections[0].id;
+setTimeout(()=> goTo(initial), 50);
+
+window.addEventListener("scroll", ()=>{
+  // set active by nearest section in view
+  const tops = sections.map(s=>{
+    const el = document.getElementById(s.id);
+    if(!el) return {id:s.id, top: Infinity};
+    const r = el.getBoundingClientRect();
+    return {id:s.id, top: Math.abs(r.top - 120)};
+  }).sort((a,b)=>a.top-b.top);
+  if(tops[0]) updateTOCActive(tops[0].id);
+});
+</script>
 </body>
 </html>
-
