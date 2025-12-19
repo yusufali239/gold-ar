@@ -3,9 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>كتاب الفرائض — نسخة للحفظ</title>
+  <title>كتاب الفرائض — نسخة للحفظ v2.0</title>
 
-  <!-- Arabic-friendly fonts (works if online; fallback if offline) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
@@ -36,6 +35,29 @@
       color:var(--text);
       font-family: "Noto Naskh Arabic","Amiri", system-ui, sans-serif;
       line-height:1.85;
+      transition: background 0.3s ease;
+    }
+
+    /* Light theme */
+    body.light{
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --card2:#f1f5f9;
+      --text:#1e293b;
+      --muted:#64748b;
+      --line:#cbd5e1;
+      --accent:#0284c7;
+      --accent2:#7c3aed;
+      --shadow: 0 4px 20px rgba(0,0,0,.08);
+    }
+    body.light{
+      background: radial-gradient(1200px 800px at 20% -10%, rgba(167,139,250,.08), transparent 55%),
+                  radial-gradient(900px 600px at 100% 0%, rgba(125,211,252,.06), transparent 60%),
+                  var(--bg);
+    }
+    body.light header{
+      background: rgba(248,250,252,.85);
+      border-bottom-color: rgba(203,213,225,.6);
     }
 
     header{
@@ -167,7 +189,6 @@
       margin-bottom: 10px;
     }
 
-    /* memorization tools */
     .tools{
       display:flex; gap:10px; flex-wrap:wrap;
       margin: 10px 0 0;
@@ -260,6 +281,13 @@
       color: var(--muted);
       font-size: 12px;
     }
+
+    @media print {
+      header, aside, .tools, button, details, .footer { display: none !important; }
+      body { background: white; color: black; }
+      .panel { border: none; box-shadow: none; background: white; }
+      .section { page-break-inside: avoid; border-color: #ddd; }
+    }
   </style>
 </head>
 
@@ -269,13 +297,15 @@
     <div class="topbar">
       <div class="title">
         كتاب الفرائض — نسخة للحفظ
-        <span class="badge">بحث • بطاقات • اختبار</span>
+        <span class="badge">بحث • بطاقات • اختبار • مؤقت</span>
       </div>
 
       <div class="controls">
         <input id="search" class="input" type="search" placeholder="ابحث في النص..." />
-        <button class="btn ghost" id="toggleMarks">إخفاء/إظهار التحديد</button>
+        <button class="btn ghost" id="toggleMarks">إخفاء التحديد</button>
         <button class="btn primary" id="toggleFocus">وضع الحفظ</button>
+        <button class="btn ghost" id="toggleDark">🌙</button>
+        <button class="btn ghost" id="printBtn">🖨️</button>
         <select id="fontSize" title="حجم الخط">
           <option value="18">18</option>
           <option value="20" selected>20</option>
@@ -287,8 +317,9 @@
     </div>
 
     <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-      <div class="pill">الصفحات: HTML</div>
+      <div class="pill">v2.0</div>
       <div class="pill" id="stats">0 قسم • 0 بطاقة</div>
+      <div class="pill" id="timerDisplay" style="display:none">⏱️ 00:00</div>
       <div style="flex:1"></div>
       <div style="min-width:240px; width:320px;">
         <div class="progress" title="تقدّم القراءة">
@@ -301,22 +332,31 @@
 
 <main class="wrap">
   <div class="grid">
-    <!-- Sidebar -->
     <aside class="panel">
       <div class="head">
         <h3>فهرس</h3>
-        <button class="btn ghost" id="clearProgress">تصفير التقدّم</button>
+        <button class="btn ghost" id="clearProgress">تصفير</button>
       </div>
       <div class="body">
         <div class="toc" id="toc"></div>
 
         <details>
           <summary>📌 ملاحظاتي</summary>
-          <textarea id="notes" class="input note" placeholder="اكتب ملاحظاتك هنا... (تُحفظ تلقائياً)"></textarea>
+          <textarea id="notes" class="input note" placeholder="اكتب ملاحظاتك هنا..."></textarea>
         </details>
 
         <details>
-          <summary>🧠 اختبار سريع (Flash Quiz)</summary>
+          <summary>⏱️ مؤقت الدراسة</summary>
+          <div style="display:flex; gap:8px; margin:10px 0; flex-wrap:wrap;">
+            <button class="btn primary" id="startTimer">▶️ ابدأ</button>
+            <button class="btn ghost" id="pauseTimer">⏸️ وقف</button>
+            <button class="btn ghost" id="resetTimer">🔄 إعادة</button>
+          </div>
+          <div class="pill" id="totalTime">إجمالي: 0 دقيقة</div>
+        </details>
+
+        <details>
+          <summary>🧠 اختبار سريع</summary>
           <div id="quiz"></div>
           <div class="tools">
             <button class="btn primary" id="newQuiz">اختبار جديد</button>
@@ -324,20 +364,48 @@
           </div>
         </details>
 
+        <details>
+          <summary>📊 إحصائيات</summary>
+          <div id="statsPanel" style="margin-top:10px; font-size:14px;">
+            <div class="pill" style="width:100%; margin-bottom:8px;">
+              الأقسام: <b id="completedSections">0/0</b>
+            </div>
+            <div class="pill" style="width:100%; margin-bottom:8px;">
+              وقت الدراسة: <b id="studyTimeTotal">0</b> د
+            </div>
+            <div class="pill" style="width:100%; margin-bottom:8px;">
+              آخر زيارة: <b id="lastVisit">---</b>
+            </div>
+            <div class="pill" style="width:100%;">
+              الإنجاز: <b id="achievement">0%</b>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>💾 إدارة البيانات</summary>
+          <div class="tools">
+            <button class="btn primary" id="exportData">تصدير</button>
+            <button class="btn ghost" id="importData">استيراد</button>
+          </div>
+          <input type="file" id="importFile" accept=".json" style="display:none">
+        </details>
+
         <div class="footer">
-          ✅ كل شيء يحفظ تلقائياً في جهازك (LocalStorage).<br>
-          ⚡ افتح الملف على الهاتف ويشتغل مثل كتاب.
+          ✅ كل شيء يحفظ تلقائياً<br>
+          ⚡ يعمل على الهاتف والحاسوب<br>
+          <small style="color: var(--muted);">النسخة المحسّنة v2.0</small>
         </div>
       </div>
     </aside>
 
-    <!-- Content -->
     <section class="panel">
       <div class="head">
         <h3 id="currentTitle">المحتوى</h3>
         <div class="tools">
-          <button class="btn ghost" id="bookmarkBtn">⭐ حفظ علامة</button>
-          <button class="btn ghost" id="copyLinkBtn">🔗 نسخ رابط القسم</button>
+          <button class="btn ghost" id="bookmarkBtn">⭐ علامة</button>
+          <button class="btn ghost" id="copyLinkBtn">🔗 رابط</button>
+          <button class="btn ghost" id="readAloud">🔊 قراءة</button>
         </div>
       </div>
 
@@ -347,100 +415,361 @@
 </main>
 
 <script>
-/**
- * ====== CONTENT (Paste your Arabic text here) ======
- * Structure: sections[] each has id, title, subtitle, body, flashcards[], quiz[]
- */
 const sections = [
   {
     id: "t1",
     title: "تعريف الميراث لغةً واصطلاحًا",
-    subtitle: "نص + بطاقات للحفظ",
+    subtitle: "المفاهيم الأساسية",
     body: `
-<p><b>تعريف الميراث لغةً:</b> الميراث مصدر من ورث، وهو انتقال الشيء من شخص إلى شخص آخر...</p>
-<p><b>واصطلاحًا:</b> عبارة عن انتقال ملك أحد بسبب الموت إلى ورثته الحقيقية.</p>
+<p><b>تعريف الميراث لغةً:</b> الميراث مصدر من ورث، وهو انتقال الشيء من شخص إلى شخص آخر بعد موته.</p>
+<p><b>واصطلاحًا:</b> عبارة عن انتقال ملك أحد بسبب الموت إلى ورثته الحقيقية بالطرق الشرعية.</p>
+<p>الميراث حق مقدس في الإسلام، وقد فصّل الله تعالى أحكامه في القرآن الكريم في آيات سورة النساء.</p>
 `,
     flashcards: [
-      {q:"تعريف الميراث لغةً؟", a:"انتقال الشيء من شخص إلى شخص آخر."},
-      {q:"تعريف الميراث اصطلاحًا؟", a:"انتقال ملك أحد بسبب الموت إلى ورثته."}
+      {q:"تعريف الميراث لغةً؟", a:"انتقال الشيء من شخص لآخر بعد موته"},
+      {q:"تعريف الميراث اصطلاحًا؟", a:"انتقال ملك الميت لورثته بالطرق الشرعية"}
     ],
     quiz: [
-      {q:"كم عدد أركان الميراث؟", a:"ثلاثة"},
-      {q:"اذكر سببين من أسباب الإرث.", a:"النسب، النكاح (وأيضًا الولاء، بيت المال عند عدم الوارث)"}
+      {q:"كم عدد أركان الميراث؟", a:"ثلاثة أركان"},
+      {q:"أين فصّل الله أحكام الميراث؟", a:"في سورة النساء"}
     ]
   },
 
   {
     id: "t2",
     title: "تعريف علم الفرائض",
-    subtitle: "مختصر واضح",
+    subtitle: "العلم والموضوع",
     body: `
-<p>هو علم يُبحث فيه عن انتقال ملك الميت إلى ورثته الأحياء، وعن أحوال الورثة، والسهام المقدّرة...</p>
+<p><b>علم الفرائض:</b> هو علم يُبحث فيه عن انتقال ملك الميت إلى ورثته الأحياء، وعن أحوال الورثة، والسهام المقدّرة لهم شرعاً.</p>
+<p><b>موضوعه:</b> التركة والسهام ومستحقوها.</p>
+<p><b>فائدته:</b> معرفة كيفية قسمة التركة على الورثة حسب الشرع، وإيصال الحقوق لأصحابها.</p>
+<p><b>سبب التسمية:</b> سمي بعلم الفرائض لأن مسائله مبنية على الفروض المقدّرة في كتاب الله.</p>
 `,
     flashcards: [
-      {q:"ما موضوع علم الفرائض؟", a:"التركة والسهام ومستحقوها."},
-      {q:"لماذا سمي علم الفرائض؟", a:"لأن مسائله مبنية على الفروض المقدّرة."}
+      {q:"ما موضوع علم الفرائض؟", a:"التركة والسهام ومستحقوها"},
+      {q:"لماذا سمي بعلم الفرائض؟", a:"لأن مسائله مبنية على الفروض المقدّرة"}
     ],
     quiz: [
-      {q:"اذكر مصادر علم الميراث.", a:"الكتاب، السنة، الإجماع"}
+      {q:"ما فائدة علم الفرائض؟", a:"قسمة التركة وإيصال الحقوق"}
     ]
   },
 
   {
     id: "t3",
     title: "المصطلحات الأساسية",
-    subtitle: "تعريفات مركّزة للحفظ",
+    subtitle: "قاموس الفرائض",
     body: `
 <ul>
-  <li><b>الفرض:</b> هو النصيب المقدر شرعًا للوارث...</li>
-  <li><b>السهم:</b> هو الجزء المعين الذي يعطى لكل وارث...</li>
-  <li><b>التركة:</b> ما تركه الميت من الأموال والحقوق...</li>
-  <li><b>السبب:</b> ما يكون سببًا للإرث كالنكاح والولاء...</li>
+  <li><b>الفرض:</b> النصيب المقدر شرعاً للوارث من التركة.</li>
+  <li><b>السهم:</b> الجزء المعين الذي يُعطى لكل وارث من التركة.</li>
+  <li><b>التركة (الإرث):</b> ما تركه الميت من الأموال والحقوق بعد سداد الديون وتنفيذ الوصايا.</li>
+  <li><b>المورث:</b> الميت الذي انتقل ماله لورثته.</li>
+  <li><b>الوارث:</b> الشخص الحي الذي يستحق نصيباً من التركة.</li>
+  <li><b>الحجب:</b> منع الوارث من الإرث كلياً أو نقص نصيبه.</li>
+  <li><b>العصبة:</b> من يرث بلا تقدير فيأخذ ما بقي بعد أصحاب الفروض.</li>
 </ul>
 `,
     flashcards: [
-      {q:"ما هو الفرض؟", a:"النصيب المقدر شرعًا للوارث."},
-      {q:"ما هي التركة؟", a:"ما تركه الميت من الأموال والحقوق."}
+      {q:"ما هو الفرض؟", a:"النصيب المقدر شرعاً للوارث"},
+      {q:"ما هي التركة؟", a:"ما تركه الميت بعد الديون والوصايا"},
+      {q:"من هو المورث؟", a:"الميت الذي انتقل ماله"}
     ],
     quiz: [
-      {q:"السبب من أمثلته؟", a:"النكاح والولاء"}
+      {q:"اذكر الفرق بين الفرض والعصبة.", a:"الفرض مقدر، العصبة تأخذ الباقي"}
     ]
   },
 
   {
     id: "t4",
-    title: "أركان الميراث + أسباب الإرث + شروط الإرث",
-    subtitle: "ثلاثيات للحفظ السريع",
+    title: "أركان الميراث وأسبابه وشروطه",
+    subtitle: "الأساسيات الثلاث",
     body: `
-<p><b>أركان الميراث:</b> المورث، الوارث، التركة.</p>
-<p><b>أسباب الإرث:</b> النسب، النكاح، الولاء، بيت المال عند عدم الوارث.</p>
-<p><b>شروط الإرث:</b> تحقق موت المورث، تحقق حياة الوارث، العلم بالجهة المقتضية للإرث.</p>
+<p><b>أركان الميراث (3):</b></p>
+<ol>
+  <li>المورث (الميت)</li>
+  <li>الوارث (الحي)</li>
+  <li>الموروث (التركة)</li>
+</ol>
+
+<p><b>أسباب الإرث (4):</b></p>
+<ol>
+  <li><b>النسب:</b> القرابة بالدم</li>
+  <li><b>النكاح:</b> الزوجية الشرعية</li>
+  <li><b>الولاء:</b> سبب الإرث بالعتق</li>
+  <li><b>بيت المال:</b> عند عدم وجود وارث</li>
+</ol>
+
+<p><b>شروط الإرث (3):</b></p>
+<ol>
+  <li>تحقق موت المورث حقيقة أو حكماً</li>
+  <li>تحقق حياة الوارث بعد موت المورث</li>
+  <li>العلم بالجهة المقتضية للإرث (نسب أو نكاح...)</li>
+</ol>
 `,
     flashcards: [
-      {q:"أركان الميراث؟", a:"المورث، الوارث، التركة."},
-      {q:"شروط الإرث؟", a:"موت المورث، حياة الوارث، العلم بالجهة."}
+      {q:"أركان الميراث؟", a:"المورث، الوارث، الموروث"},
+      {q:"أسباب الإرث الأربعة؟", a:"النسب، النكاح، الولاء، بيت المال"},
+      {q:"شروط الإرث؟", a:"موت المورث، حياة الوارث، العلم بالجهة"}
     ],
     quiz: [
-      {q:"اذكر سببًا غير النسب.", a:"النكاح أو الولاء"}
+      {q:"متى يرث بيت المال؟", a:"عند عدم وجود وارث"}
     ]
   },
 
   {
     id: "t5",
-    title: "التدريب",
-    subtitle: "أسئلة مراجعة",
+    title: "موانع الإرث",
+    subtitle: "ما يمنع التوريث",
     body: `
+<p>هناك ثلاثة موانع تمنع من الإرث:</p>
 <ol>
-  <li>اذكر تعريف علم الميراث، وموضوعه، وفائدته.</li>
-  <li>بيّن أركان الميراث وأسبابه.</li>
-  <li>ما هي شروط الإرث؟</li>
-  <li>اذكر بعض المصطلحات الأساسية لعلم الميراث.</li>
+  <li><b>الرق (العبودية):</b> العبد لا يرث ولا يورث (ملغى في عصرنا)</li>
+  <li><b>القتل العمد:</b> من قتل مورثه عمداً لا يرث منه</li>
+  <li><b>اختلاف الدين:</b> لا يرث المسلم الكافر ولا الكافر المسلم</li>
 </ol>
-`
+<p><b>الحكمة:</b> حماية الحقوق ومنع الظلم والاستغلال.</p>
+`,
+    flashcards: [
+      {q:"موانع الإرث الثلاثة؟", a:"الرق، القتل العمد، اختلاف الدين"},
+      {q:"هل يرث القاتل من قتله؟", a:"لا، القاتل لا يرث"}
+    ],
+    quiz: [
+      {q:"ما حكم توريث المسلم من الكافر؟", a:"لا يرث، لاختلاف الدين"}
+    ]
+  },
+
+  {
+    id: "t6",
+    title: "الفروض المقدرة",
+    subtitle: "الأنصبة الستة",
+    body: `
+<p>الفروض المقدرة في القرآن ستة:</p>
+
+<ol>
+  <li><b>النصف (½):</b> 
+    <ul>
+      <li>الزوج عند عدم الفرع الوارث</li>
+      <li>البنت الواحدة</li>
+      <li>بنت الابن الواحدة (عند عدم البنت)</li>
+      <li>الأخت الشقيقة الواحدة</li>
+      <li>الأخت لأب الواحدة</li>
+    </ul>
+  </li>
+
+  <li><b>الربع (¼):</b>
+    <ul>
+      <li>الزوج مع الفرع الوارث</li>
+      <li>الزوجة عند عدم الفرع الوارث</li>
+    </ul>
+  </li>
+
+  <li><b>الثمن (⅛):</b>
+    <ul>
+      <li>الزوجة أو الزوجات مع الفرع الوارث</li>
+    </ul>
+  </li>
+
+  <li><b>الثلثان (⅔):</b>
+    <ul>
+      <li>البنتان فأكثر</li>
+      <li>بنتا الابن فأكثر</li>
+      <li>الأختان الشقيقتان فأكثر</li>
+      <li>الأختان لأب فأكثر</li>
+    </ul>
+  </li>
+
+  <li><b>الثلث (⅓):</b>
+    <ul>
+      <li>الأم عند عدم الفرع والجمع من الإخوة</li>
+      <li>الاثنان فأكثر من الإخوة لأم</li>
+    </ul>
+  </li>
+
+  <li><b>السدس (⅙):</b>
+    <ul>
+      <li>الأب مع الفرع الوارث المذكر</li>
+      <li>الأم مع الفرع أو جمع الإخوة</li>
+      <li>الجدة أو الجدات</li>
+      <li>بنت الابن مع البنت</li>
+      <li>الأخت لأب مع الأخت الشقيقة</li>
+      <li>الأخ لأم أو الأخت لأم</li>
+    </ul>
+  </li>
+</ol>
+`,
+    flashcards: [
+      {q:"كم عدد الفروض المقدرة؟", a:"ستة فروض"},
+      {q:"متى يأخذ الزوج النصف؟", a:"عند عدم الفرع الوارث"},
+      {q:"متى تأخذ الزوجة الثمن؟", a:"مع وجود الفرع الوارث"},
+      {q:"من يأخذ الثلثين؟", a:"البنتان فأكثر، الأختان فأكثر"}
+    ],
+    quiz: [
+      {q:"اذكر ثلاثة من أصحاب النصف.", a:"الزوج، البنت، الأخت الشقيقة"},
+      {q:"متى تأخذ الأم الثلث؟", a:"عند عدم الفرع وجمع الإخوة"}
+    ]
+  },
+
+  {
+    id: "t7",
+    title: "العصبات",
+    subtitle: "الوارثون بلا تقدير",
+    body: `
+<p><b>العصبة:</b> من يرث بلا تقدير، فيأخذ جميع المال إن انفرد، أو الباقي بعد أصحاب الفروض.</p>
+
+<p><b>أنواع العصبات:</b></p>
+
+<ol>
+  <li><b>عصبة بالنفس:</b> كل ذكر من النسب ليس بينه وبين الميت أنثى:
+    <ul>
+      <li>البنون وبنوهم وإن نزلوا</li>
+      <li>الأب والجد وإن علا</li>
+      <li>الإخوة الأشقاء وبنوهم</li>
+      <li>الإخوة لأب وبنوهم</li>
+      <li>الأعمام الأشقاء وبنوهم</li>
+      <li>الأعمام لأب وبنوهم</li>
+    </ul>
+  </li>
+
+  <li><b>عصبة بالغير:</b> الأنثى التي تصير عصبة بسبب ذكر:
+    <ul>
+      <li>البنت مع الابن</li>
+      <li>بنت الابن مع ابن الابن</li>
+      <li>الأخت الشقيقة مع الأخ الشقيق</li>
+      <li>الأخت لأب مع الأخ لأب</li>
+    </ul>
+  </li>
+
+  <li><b>عصبة مع الغير:</b> 
+    <ul>
+      <li>الأخت الشقيقة أو لأب مع البنت أو بنت الابن</li>
+    </ul>
+  </li>
+</ol>
+
+<p><b>قاعدة:</b> للذكر مثل حظ الأنثيين في العصبة بالغير.</p>
+`,
+    flashcards: [
+      {q:"ما هي العصبة؟", a:"من يرث بلا تقدير فيأخذ الباقي"},
+      {q:"اذكر أنواع العصبات.", a:"بالنفس، بالغير، مع الغير"},
+      {q:"مثال العصبة بالغير؟", a:"البنت مع الابن"}
+    ],
+    quiz: [
+      {q:"متى تصبح الأخت عصبة مع الغير؟", a:"مع البنت أو بنت الابن"}
+    ]
+  },
+
+  {
+    id: "t8",
+    title: "الحجب",
+    subtitle: "المنع من الإرث",
+    body: `
+<p><b>الحجب:</b> منع من قام به سبب الإرث من الإرث بالكلية أو من أوفره.</p>
+
+<p><b>نوعا الحجب:</b></p>
+
+<ol>
+  <li><b>حجب حرمان:</b> منع الوارث من الإرث بالكلية
+    <p><b>مثال:</b> الابن يحجب الأخ، والأب يحجب الجد</p>
+  </li>
+
+  <li><b>حجب نقصان:</b> نقص نصيب الوارث من فرض أكثر إلى أقل
+    <p><b>مثال:</b> الزوج ينتقل من النصف إلى الربع بوجود الفرع</p>
+  </li>
+</ol>
+
+<p><b>من لا يُحجب حجب حرمان:</b></p>
+<ul>
+  <li>الأبوان (لكن يحجبان حجب نقصان)</li>
+  <li>الزوجان (لكن يحجبان حجب نقصان)</li>
+  <li>الأولاد (البنون والبنات)</li>
+</ul>
+
+<p><b>قاعدة:</b> الأقرب يحجب الأبعد (الابن يحجب ابن الابن)</p>
+`,
+    flashcards: [
+      {q:"ما هو الحجب؟", a:"منع الوارث من الإرث كلياً أو نقصاً"},
+      {q:"من لا يُحجب حجب حرمان؟", a:"الأبوان، الزوجان، الأولاد"},
+      {q:"اذكر قاعدة الحجب.", a:"الأقرب يحجب الأبعد"}
+    ],
+    quiz: [
+      {q:"ما الفرق بين حجب الحرمان والنقصان؟", a:"الحرمان: منع كامل، النقصان: تقليل النصيب"}
+    ]
+  },
+
+  {
+    id: "t9",
+    title: "أمثلة عملية",
+    subtitle: "تطبيقات على القسمة",
+    body: `
+<p><b>مثال 1:</b> توفي عن: زوجة + بنت + ابن</p>
+<ul>
+  <li>الزوجة: الثمن (⅛) = 1 من 8</li>
+  <li>الباقي للأولاد بالتعصيب (⅞ = 7)</li>
+  <li>الابن: 2 × سهم البنت</li>
+  <li>تقسيم السبعة: الابن 4 + البنت 2 + البنت 1 (إن كانت أخرى)</li>
+</ul>
+
+<p><b>مثال 2:</b> توفي عن: زوج + بنتين + أب</p>
+<ul>
+  <li>الزوج: الربع (¼)</li>
+  <li>البنتان: الثلثان (⅔)</li>
+  <li>الأب: السدس (⅙) + الباقي بالتعصيب</li>
+</ul>
+
+<p><b>مثال 3:</b> توفيت عن: زوج + أم + أخ شقيق</p>
+<ul>
+  <li>الزوج: النصف (½)</li>
+  <li>الأم: الثلث (⅓)</li>
+  <li>الأخ: الباقي بالتعصيب (⅙)</li>
+</ul>
+
+<p><b>ملاحظة:</b> هذه أمثلة مبسطة، والحالات الحقيقية قد تحتاج لتصحيح وعول.</p>
+`,
+    flashcards: [
+      {q:"ما نصيب الزوجة مع وجود الأولاد؟", a:"الثمن"},
+      {q:"كيف يقسم الباقي بين الذكر والأنثى؟", a:"للذكر مثل حظ الأنثيين"}
+    ],
+    quiz: [
+      {q:"إذا توفي عن زوجة وابن، كم نصيب الزوجة؟", a:"الثمن"}
+    ]
+  },
+
+  {
+    id: "t10",
+    title: "التدريبات والمراجعة",
+    subtitle: "اختبر معلوماتك",
+    body: `
+<p><b>أسئلة المراجعة:</b></p>
+
+<ol>
+  <li>اذكر تعريف علم الميراث لغةً واصطلاحاً.</li>
+  <li>بيّن أركان الميراث الثلاثة.</li>
+  <li>ما هي أسباب الإرث؟ وما هي شروطه؟</li>
+  <li>اذكر موانع الإرث الثلاثة.</li>
+  <li>كم عدد الفروض المقدرة؟ اذكرها.</li>
+  <li>ما الفرق بين أصحاب الفروض والعصبات؟</li>
+  <li>متى يأخذ الزوج النصف؟ ومتى يأخذ الربع؟</li>
+  <li>من هم الذين لا يُحجبون حجب حرمان؟</li>
+  <li>اذكر أنواع العصبات الثلاثة.</li>
+  <li>ما هي قاعدة الحجب الأساسية؟</li>
+</ol>
+
+<p><b>تمارين عملية:</b></p>
+
+<ol>
+  <li>توفي عن: زوجة + ابن + بنت - احسب الأنصبة</li>
+  <li>توفي عن: زوج + أم + أب - احسب الأنصبة</li>
+  <li>توفيت عن: زوج + بنتين + أخ - احسب الأنصبة</li>
+</ol>
+
+<p><b>نصيحة:</b> أعد قراءة الأقسام السابقة وحل الأمثلة بنفسك.</p>
+`,
+    quiz: [
+      {q:"ما أهم نصيحة لإتقان علم الميراث؟", a:"الممارسة والتطبيق المستمر"}
+    ]
   }
 ];
 
-/* ====== UI RENDER ====== */
 const $ = (s)=>document.querySelector(s);
 const toc = $("#toc");
 const content = $("#content");
@@ -450,18 +779,25 @@ const bar = $("#bar");
 const currentTitle = $("#currentTitle");
 
 const LS = {
-  key: "faraid_book_v1",
+  key: "faraid_book_v2",
   load(){ try{ return JSON.parse(localStorage.getItem(this.key) || "{}"); }catch(e){ return {}; } },
   save(data){ localStorage.setItem(this.key, JSON.stringify(data)); }
 };
 
 let state = LS.load();
-state.progress = state.progress || {};      // sectionId -> percentRead (0/1 simple)
-state.bookmark = state.bookmark || null;    // sectionId
+state.progress = state.progress || {};
+state.bookmark = state.bookmark || null;
 state.notes = state.notes || "";
 state.focus = state.focus || false;
 state.hideMarks = state.hideMarks || false;
 state.fontSize = state.fontSize || 20;
+state.theme = state.theme || "dark";
+state.studyTime = state.studyTime || 0;
+state.lastVisit = state.lastVisit || Date.now();
+
+let timerInterval = null;
+let timerRunning = false;
+let timerSeconds = 0;
 
 function renderTOC(){
   toc.innerHTML = "";
@@ -469,7 +805,7 @@ function renderTOC(){
     const a = document.createElement("a");
     a.href = "#" + sec.id;
     a.dataset.id = sec.id;
-    a.innerHTML = `${sec.title}<small>${sec.subtitle || "قسم"} • ${i+1}/${sections.length}</small>`;
+    a.innerHTML = `${sec.title}<small>${sec.subtitle || ""} • ${i+1}/${sections.length}</small>`;
     a.onclick = (e)=>{ e.preventDefault(); goTo(sec.id); };
     toc.appendChild(a);
   });
@@ -500,7 +836,6 @@ function renderContent(){
       </div>
     `;
     content.appendChild(div);
-
     cardCount += (sec.flashcards?.length || 0);
   });
 
@@ -522,7 +857,7 @@ function flashHTML(cards, secId){
 
   return `
     <details>
-      <summary>🧠 بطاقات للحفظ (افتح)</summary>
+      <summary>🧠 بطاقات للحفظ</summary>
       <div class="flashgrid">${html}</div>
     </details>
   `;
@@ -548,6 +883,7 @@ function attachSectionButtons(){
       save();
       updateTOCActive(id);
       updateProgress();
+      updateStats();
       toast("تم ✅");
     });
   });
@@ -568,7 +904,6 @@ function goTo(id){
   if (!el) return;
   el.scrollIntoView({behavior:"smooth", block:"start"});
   updateTOCActive(id);
-  // update URL hash
   history.replaceState(null, "", "#" + id);
 }
 
@@ -579,8 +914,6 @@ function updateProgress(){
 }
 
 function applyFocusMode(){
-  document.body.style.filter = state.focus ? "none" : "none";
-  // focus mode: hide sidebar a bit
   const grid = document.querySelector(".grid");
   if (state.focus){
     grid.style.gridTemplateColumns = "1fr";
@@ -593,9 +926,7 @@ function applyFocusMode(){
 }
 
 function applyMarks(){
-  $("#toggleMarks").textContent = state.hideMarks ? "إظهار التحديد" : "إخفاء/إظهار التحديد";
-  // no global marks by default, but search highlights use <mark>
-  // we simply remove marks if hidden
+  $("#toggleMarks").textContent = state.hideMarks ? "إظهار التحديد" : "إخفاء التحديد";
   if (state.hideMarks){
     content.querySelectorAll("mark").forEach(m=>{
       const t = document.createTextNode(m.textContent);
@@ -611,9 +942,7 @@ function applyFontSize(){
   });
 }
 
-/* ====== SEARCH ====== */
 function doSearch(q){
-  // remove old marks
   content.querySelectorAll("mark").forEach(m=>{
     const t = document.createTextNode(m.textContent);
     m.replaceWith(t);
@@ -621,14 +950,12 @@ function doSearch(q){
   if (!q || state.hideMarks) return;
 
   const rx = new RegExp(escapeRegExp(q), "g");
-  // highlight inside sections text only
   content.querySelectorAll(".text").forEach(node=>{
     const html = node.innerHTML;
     node.innerHTML = html.replace(rx, (m)=>`<mark>${m}</mark>`);
   });
 }
 
-/* ====== QUIZ ====== */
 function buildQuiz(){
   const pool = [];
   sections.forEach(sec=>{
@@ -638,22 +965,21 @@ function buildQuiz(){
   quizBox.innerHTML = "";
 
   if (!pool.length){
-    quizBox.innerHTML = `<div class="pill">لا يوجد اختبار في هذا النص.</div>`;
+    quizBox.innerHTML = `<div class="pill">لا يوجد اختبار.</div>`;
     return;
   }
 
-  // pick 5 random
   const pick = shuffle([...pool]).slice(0, Math.min(5, pool.length));
   pick.forEach((item, i)=>{
     const wrap = document.createElement("div");
     wrap.className = "card";
     wrap.innerHTML = `
-      <div class="q">سؤال ${i+1} • من قسم: <b>${sections.find(s=>s.id===item.secId)?.title || item.secId}</b></div>
+      <div class="q">سؤال ${i+1} • ${sections.find(s=>s.id===item.secId)?.title || ""}</div>
       <div class="a">${escapeHTML(item.q)}</div>
       <div class="reveal">
         <span class="pill ans" style="display:none">الجواب: ${escapeHTML(item.a)}</span>
         <button class="btn primary show">أظهر الجواب</button>
-        <button class="btn ghost goto" title="اذهب للقسم">اذهب</button>
+        <button class="btn ghost goto">اذهب للقسم</button>
       </div>
     `;
     wrap.querySelector(".show").onclick = ()=>{
@@ -666,12 +992,171 @@ function buildQuiz(){
   });
 }
 
+function startTimer(){
+  if (timerRunning) return;
+  timerRunning = true;
+  timerInterval = setInterval(()=>{
+    timerSeconds++;
+    updateTimerDisplay();
+    if (timerSeconds % 60 === 0) {
+      state.studyTime = (state.studyTime || 0) + 1;
+      save();
+      updateStats();
+    }
+  }, 1000);
+  $("#timerDisplay").style.display = "inline-flex";
+  toast("بدأ المؤقت ⏱️");
+}
+
+function pauseTimer(){
+  if (!timerRunning) return;
+  timerRunning = false;
+  clearInterval(timerInterval);
+  toast("توقف المؤقت ⏸️");
+}
+
+function resetTimer(){
+  pauseTimer();
+  timerSeconds = 0;
+  updateTimerDisplay();
+  $("#timerDisplay").style.display = "none";
+  toast("تم إعادة المؤقت 🔄");
+}
+
+function updateTimerDisplay(){
+  const mins = Math.floor(timerSeconds / 60);
+  const secs = timerSeconds % 60;
+  const display = `⏱️ ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+  $("#timerDisplay").textContent = display;
+}
+
+function toggleTheme(){
+  state.theme = state.theme === "dark" ? "light" : "dark";
+  document.body.className = state.theme;
+  save();
+  toast(state.theme === "dark" ? "الوضع الداكن 🌙" : "الوضع الفاتح ☀️");
+}
+
+let speechSynth = window.speechSynthesis;
+
+function readAloud(){
+  if (!speechSynth) {
+    toast("القراءة الصوتية غير مدعومة");
+    return;
+  }
+
+  if (speechSynth.speaking) {
+    speechSynth.cancel();
+    $("#readAloud").textContent = "🔊 قراءة";
+    return;
+  }
+
+  const currentId = location.hash?.slice(1) || sections[0].id;
+  const sec = sections.find(s => s.id === currentId);
+  if (!sec) return;
+
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = sec.body;
+  const text = tempDiv.textContent || tempDiv.innerText || "";
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "ar-SA";
+  utterance.rate = 0.9;
+  
+  utterance.onend = ()=>{
+    $("#readAloud").textContent = "🔊 قراءة";
+  };
+
+  speechSynth.speak(utterance);
+  $("#readAloud").textContent = "⏹️ إيقاف";
+  toast("بدأت القراءة 🔊");
+}
+
+function printPage(){
+  window.print();
+}
+
+function exportData(){
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `faraid_backup_${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("تم التصدير 💾");
+}
+
+function importData(){
+  $("#importFile").click();
+}
+
+$("#importFile").addEventListener("change", (e)=>{
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try {
+      const imported = JSON.parse(ev.target.result);
+      Object.assign(state, imported);
+      save();
+      location.reload();
+    } catch(err) {
+      toast("خطأ في الملف ❌");
+    }
+  };
+  reader.readAsText(file);
+});
+
+function updateStats(){
+  const completed = Object.values(state.progress).filter(v=>v===1).length;
+  $("#completedSections").textContent = `${completed}/${sections.length}`;
+  $("#studyTimeTotal").textContent = state.studyTime || 0;
+  $("#totalTime").textContent = `إجمالي: ${state.studyTime || 0} دقيقة`;
+  
+  const lastDate = new Date(state.lastVisit);
+  $("#lastVisit").textContent = lastDate.toLocaleDateString("ar-SA");
+  
+  const achievement = Math.round((completed / sections.length) * 100);
+  $("#achievement").textContent = achievement + "%";
+}
+
+function save(){ 
+  state.lastVisit = Date.now();
+  LS.save(state); 
+}
+
+function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\  <li><b>عصبة ب"); }
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, (m)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+}
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function toast(msg){
+  const t = document.createElement("div");
+  t.textContent = msg;
+  t.style.cssText = `
+    position:fixed; bottom:18px; left:18px; padding:10px 12px;
+    border-radius:14px; background:rgba(18,25,38,.92);
+    border:1px solid rgba(34,48,70,.8);
+    box-shadow:0 10px 30px rgba(0,0,0,.35); z-index:999;
+  `;
+  document.body.appendChild(t);
+  setTimeout(()=> t.remove(), 1400);
+}
+
 $("#newQuiz").addEventListener("click", buildQuiz);
 $("#showAnswers").addEventListener("click", ()=>{
   document.querySelectorAll("#quiz .ans").forEach(a=> a.style.display="inline-flex");
 });
 
-/* ====== BUTTONS ====== */
 $("#toggleFocus").addEventListener("click", ()=>{
   state.focus = !state.focus;
   save();
@@ -686,10 +1171,13 @@ $("#toggleMarks").addEventListener("click", ()=>{
 });
 
 $("#clearProgress").addEventListener("click", ()=>{
-  state.progress = {};
-  save();
-  updateProgress();
-  toast("تم التصفير.");
+  if (confirm("هل أنت متأكد من تصفير التقدّم؟")) {
+    state.progress = {};
+    save();
+    updateProgress();
+    updateStats();
+    toast("تم التصفير.");
+  }
 });
 
 $("#bookmarkBtn").addEventListener("click", ()=>{
@@ -706,11 +1194,10 @@ $("#copyLinkBtn").addEventListener("click", async ()=>{
     await navigator.clipboard.writeText(url);
     toast("تم نسخ الرابط 🔗");
   }catch(e){
-    toast("ما قدر ينسخ (صلاحيات المتصفح).");
+    toast("تعذر النسخ");
   }
 });
 
-/* ====== NOTES ====== */
 const notes = $("#notes");
 notes.value = state.notes || "";
 notes.addEventListener("input", ()=>{
@@ -718,49 +1205,26 @@ notes.addEventListener("input", ()=>{
   save();
 });
 
-/* ====== SEARCH INPUT ====== */
 search.addEventListener("input", ()=>{
   doSearch(search.value.trim());
 });
 
-/* ====== FONT SIZE ====== */
 $("#fontSize").addEventListener("change", (e)=>{
   state.fontSize = parseInt(e.target.value, 10);
   save();
   applyFontSize();
 });
 
-/* ====== HELPERS ====== */
-function save(){ LS.save(state); }
+$("#startTimer").addEventListener("click", startTimer);
+$("#pauseTimer").addEventListener("click", pauseTimer);
+$("#resetTimer").addEventListener("click", resetTimer);
+$("#toggleDark").addEventListener("click", toggleTheme);
+$("#readAloud").addEventListener("click", readAloud);
+$("#printBtn").addEventListener("click", printPage);
+$("#exportData").addEventListener("click", exportData);
+$("#importData").addEventListener("click", importData);
 
-function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
-function escapeHTML(s){
-  return String(s).replace(/[&<>"']/g, (m)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
-}
-function shuffle(a){
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
-function toast(msg){
-  const t = document.createElement("div");
-  t.textContent = msg;
-  t.style.position="fixed";
-  t.style.bottom="18px";
-  t.style.left="18px";
-  t.style.padding="10px 12px";
-  t.style.borderRadius="14px";
-  t.style.background="rgba(18,25,38,.92)";
-  t.style.border="1px solid rgba(34,48,70,.8)";
-  t.style.boxShadow="0 10px 30px rgba(0,0,0,.35)";
-  t.style.zIndex="999";
-  document.body.appendChild(t);
-  setTimeout(()=> t.remove(), 1400);
-}
-
-/* ====== INIT ====== */
+document.body.className = state.theme || "dark";
 renderTOC();
 renderContent();
 applyFocusMode();
@@ -768,12 +1232,12 @@ applyMarks();
 applyFontSize();
 buildQuiz();
 updateProgress();
+updateStats();
 
 const initial = location.hash?.slice(1) || state.bookmark || sections[0].id;
 setTimeout(()=> goTo(initial), 50);
 
 window.addEventListener("scroll", ()=>{
-  // set active by nearest section in view
   const tops = sections.map(s=>{
     const el = document.getElementById(s.id);
     if(!el) return {id:s.id, top: Infinity};
@@ -781,6 +1245,13 @@ window.addEventListener("scroll", ()=>{
     return {id:s.id, top: Math.abs(r.top - 120)};
   }).sort((a,b)=>a.top-b.top);
   if(tops[0]) updateTOCActive(tops[0].id);
+});
+
+window.addEventListener("beforeunload", ()=>{
+  if (timerRunning) {
+    state.studyTime = (state.studyTime || 0) + Math.floor(timerSeconds / 60);
+    save();
+  }
 });
 </script>
 </body>
